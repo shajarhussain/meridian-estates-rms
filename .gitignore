@@ -1,0 +1,15 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.thumbnail
+desktop.ini
+
+# Dependencies / build output (none today, but keep the repo clean if any appear)
+node_modules/
+dist/
+build/
+.vercel/
+
+# Local env
+.env
+.env.*

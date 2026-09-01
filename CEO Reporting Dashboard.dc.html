@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: oklch(0.155 0.006 255); }
+  body { -webkit-font-smoothing: antialiased; }
+  a { color: var(--acc, oklch(0.80 0.11 165)); text-decoration: none; }
+  a:hover { color: oklch(0.90 0.08 165); }
+  button { font: inherit; cursor: pointer; border: 0; background: none; color: inherit; }
+  input, select { font: inherit; color: inherit; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: oklch(0.32 0.01 255); border-radius: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  @keyframes pulse { 0%,100% { opacity: .35 } 50% { opacity: .7 } }
+  @media print {
+    [data-noprint] { display: none !important; }
+    html, body { background: #fff; }
+  }
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;flex-direction:column;background:oklch(0.155 0.006 255);color:oklch(0.96 0.004 255);font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:14px">
+
+  <header data-noprint="1" style="display:flex;align-items:center;gap:18px;padding:12px 22px;border-bottom:1px solid oklch(0.28 0.008 255);background:oklch(0.185 0.007 255);position:sticky;top:0;z-index:20;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:11px;min-width:200px">
+      <div style="width:30px;height:30px;border-radius:8px;background:var(--acc, oklch(0.80 0.11 165));display:grid;place-items:center;color:oklch(0.18 0.02 165);font-weight:700;font-size:13px;letter-spacing:-0.02em">ME</div>
+      <div style="display:flex;flex-direction:column;line-height:1.25">
+        <span style="font-weight:600;letter-spacing:-0.01em">Meridian Estates</span>
+        <span style="font-size:11px;color:oklch(0.66 0.012 255);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:0.06em">Reporting &amp; CEO dashboard</span>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:6px;flex-wrap:wrap;flex:1;min-width:280px">
+      <sc-for list="{{ rangeChips }}" as="chip" hint-placeholder-count="10">
+        <button onClick="{{ chip.go }}" style="{{ chip.s }}">{{ chip.label }}</button>
+      </sc-for>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:8px">
+      <button onClick="{{ toggleNumbers }}" style="padding:7px 11px;border-radius:8px;border:1px solid oklch(0.32 0.01 255);font-size:12px;font-family:'IBM Plex Mono',monospace;color:oklch(0.80 0.01 255)">{{ numbersLabel }}</button>
+      <div style="display:flex;align-items:center;gap:7px;padding:5px 8px 5px 11px;border-radius:8px;border:1px solid oklch(0.32 0.01 255)">
+        <span style="font-size:11px;color:oklch(0.66 0.012 255);text-transform:uppercase;letter-spacing:0.06em">Role</span>
+        <select value="{{ role }}" onChange="{{ setRole }}" style="background:transparent;border:0;font-size:13px;font-weight:600;outline:none">
+          <sc-for list="{{ roleOptions }}" as="r" hint-placeholder-count="4">
+            <option value="{{ r.value }}" style="background:oklch(0.20 0.007 255)">{{ r.label }}</option>
+          </sc-for>
+        </select>
+      </div>
+      <button onClick="{{ exportCsv }}" style="padding:7px 11px;border-radius:8px;background:oklch(0.26 0.01 255);font-size:12px;font-weight:600">CSV</button>
+      <button onClick="{{ exportXls }}" style="padding:7px 11px;border-radius:8px;background:oklch(0.26 0.01 255);font-size:12px;font-weight:600">Excel</button>
+      <button onClick="{{ printReport }}" style="padding:7px 12px;border-radius:8px;background:var(--acc, oklch(0.80 0.11 165));color:oklch(0.18 0.02 165);font-size:12px;font-weight:700">PDF / Print</button>
+    </div>
+  </header>
+
+  <sc-if value="{{ customOpen }}" hint-placeholder-val="{{ false }}">
+    <div data-noprint="1" style="display:flex;align-items:center;gap:12px;padding:11px 22px;background:oklch(0.21 0.008 255);border-bottom:1px solid oklch(0.28 0.008 255);flex-wrap:wrap">
+      <span style="font-size:12px;text-transform:uppercase;letter-spacing:0.07em;color:oklch(0.66 0.012 255)">Custom range</span>
+      <input type="date" value="{{ customStart }}" onChange="{{ setCustomStart }}" style="background:oklch(0.17 0.006 255);border:1px solid oklch(0.32 0.01 255);border-radius:7px;padding:6px 9px;font-size:13px" />
+      <span style="color:oklch(0.6 0.01 255)">→</span>
+      <input type="date" value="{{ customEnd }}" onChange="{{ setCustomEnd }}" style="background:oklch(0.17 0.006 255);border:1px solid oklch(0.32 0.01 255);border-radius:7px;padding:6px 9px;font-size:13px" />
+      <button onClick="{{ applyCustom }}" style="padding:7px 14px;border-radius:7px;background:var(--acc, oklch(0.80 0.11 165));color:oklch(0.18 0.02 165);font-weight:700;font-size:12px">Apply</button>
+      <sc-if value="{{ customError }}" hint-placeholder-val="{{ false }}">
+        <span style="font-size:12.5px;color:oklch(0.72 0.13 25);font-weight:500">{{ customError }}</span>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <div style="display:flex;flex:1;min-height:0;align-items:stretch">
+    <nav data-noprint="1" style="width:230px;flex:0 0 230px;border-right:1px solid oklch(0.28 0.008 255);background:oklch(0.175 0.006 255);padding:16px 12px 40px;display:flex;flex-direction:column;gap:16px">
+      <sc-for list="{{ navGroups }}" as="group" hint-placeholder-count="6">
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <span style="font-size:10.5px;text-transform:uppercase;letter-spacing:0.1em;color:oklch(0.58 0.012 255);padding:4px 10px 6px;font-family:'IBM Plex Mono',monospace">{{ group.label }}</span>
+          <sc-for list="{{ group.items }}" as="item" hint-placeholder-count="4">
+            <button onClick="{{ item.go }}" style="{{ item.s }}">
+              <span>{{ item.label }}</span>
+              <span style="{{ item.badgeStyle }}">{{ item.badge }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </sc-for>
+    </nav>
+
+    <main style="flex:1;min-width:0;display:flex;flex-direction:column">
+
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:20px;padding:20px 26px 16px;border-bottom:1px solid oklch(0.24 0.008 255);flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:6px;min-width:280px">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <sc-for list="{{ crumbs }}" as="cb" hint-placeholder-count="2">
+              <button onClick="{{ cb.go }}" style="{{ cb.s }}">{{ cb.label }}</button>
+            </sc-for>
+          </div>
+          <h1 style="margin:0;font-size:25px;font-weight:600;letter-spacing:-0.02em;text-wrap:pretty">{{ pageTitle }}</h1>
+          <p style="margin:0;font-size:13px;color:oklch(0.68 0.012 255);max-width:70ch;text-wrap:pretty">{{ pageSubtitle }}</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:oklch(0.66 0.012 255)">
+          <span>{{ companyName }}</span>
+          <span style="color:oklch(0.92 0.006 255);font-weight:500">{{ rangeLabel }}</span>
+          <span>Generated {{ generatedAt }}</span>
+        </div>
+      </div>
+
+      <div data-noprint="1" style="display:flex;align-items:center;gap:8px;padding:12px 26px;border-bottom:1px solid oklch(0.24 0.008 255);flex-wrap:wrap;background:oklch(0.168 0.006 255)">
+        <input type="search" value="{{ query }}" onChange="{{ setQuery }}" placeholder="Search records…" style="background:oklch(0.20 0.007 255);border:1px solid oklch(0.30 0.01 255);border-radius:8px;padding:7px 11px;font-size:13px;min-width:190px" />
+        <sc-for list="{{ filterControls }}" as="fc" hint-placeholder-count="5">
+          <select value="{{ fc.value }}" onChange="{{ fc.onChange }}" style="background:oklch(0.20 0.007 255);border:1px solid oklch(0.30 0.01 255);border-radius:8px;padding:7px 9px;font-size:12.5px;max-width:190px">
+            <sc-for list="{{ fc.options }}" as="o" hint-placeholder-count="4">
+              <option value="{{ o.value }}" style="background:oklch(0.20 0.007 255)">{{ o.label }}</option>
+            </sc-for>
+          </select>
+        </sc-for>
+        <button onClick="{{ resetFilters }}" style="padding:7px 11px;border-radius:8px;border:1px solid oklch(0.30 0.01 255);font-size:12px;color:oklch(0.75 0.01 255)">Reset filters</button>
+        <span style="font-size:12px;color:oklch(0.64 0.012 255);font-family:'IBM Plex Mono',monospace">{{ resultNote }}</span>
+      </div>
+
+      <div style="padding:22px 26px 70px;display:flex;flex-direction:column;gap:20px">
+
+        <sc-if value="{{ loading }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px">
+            <sc-for list="{{ skeletons }}" as="sk" hint-placeholder-count="10">
+              <div style="height:96px;border-radius:12px;background:oklch(0.21 0.008 255);animation:pulse 1.6s ease-in-out infinite"></div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ denied }}" hint-placeholder-val="{{ false }}">
+          <div style="border:1px solid oklch(0.36 0.06 25);background:oklch(0.22 0.02 25);border-radius:14px;padding:26px;display:flex;flex-direction:column;gap:8px;max-width:640px">
+            <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.1em;font-family:'IBM Plex Mono',monospace;color:oklch(0.78 0.11 25)">Access restricted</span>
+            <strong style="font-size:19px;font-weight:600">{{ deniedTitle }}</strong>
+            <p style="margin:0;font-size:13.5px;color:oklch(0.80 0.02 25);text-wrap:pretty">{{ deniedNote }}</p>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:20px">
+
+            <div style="border:1px solid oklch(0.28 0.008 255);border-radius:14px;background:oklch(0.195 0.007 255);padding:16px 18px;display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap">
+                <span style="font-size:12px;text-transform:uppercase;letter-spacing:0.09em;color:oklch(0.66 0.012 255);font-family:'IBM Plex Mono',monospace">Property portfolio</span>
+                <span style="font-size:12.5px;color:oklch(0.70 0.012 255)">{{ portfolioNote }}</span>
+              </div>
+              <div style="display:flex;height:10px;border-radius:6px;overflow:hidden;background:oklch(0.26 0.008 255)">
+                <sc-for list="{{ portfolioBars }}" as="pb" hint-placeholder-count="4">
+                  <div style="{{ pb.s }}" title="{{ pb.title }}"></div>
+                </sc-for>
+              </div>
+              <div style="display:flex;gap:22px;flex-wrap:wrap">
+                <sc-for list="{{ portfolioLegend }}" as="pl" hint-placeholder-count="4">
+                  <div style="display:flex;align-items:center;gap:7px">
+                    <span style="{{ pl.dot }}"></span>
+                    <span style="font-size:12.5px;color:oklch(0.72 0.012 255)">{{ pl.label }}</span>
+                    <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600">{{ pl.value }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <sc-for list="{{ kpiRows }}" as="row" hint-placeholder-count="3">
+              <div style="{{ row.s }}">
+                <sc-for list="{{ row.cards }}" as="card" hint-placeholder-count="5">
+                  <button onClick="{{ card.go }}" style="border:1px solid oklch(0.28 0.008 255);border-radius:13px;background:oklch(0.195 0.007 255);padding:14px 15px;display:flex;flex-direction:column;gap:7px;text-align:left;transition:border-color .15s,transform .15s" style-hover="border-color:var(--acc, oklch(0.80 0.11 165));transform:translateY(-1px)">
+                    <span style="font-size:11.5px;text-transform:uppercase;letter-spacing:0.07em;color:oklch(0.66 0.012 255);font-family:'IBM Plex Mono',monospace">{{ card.label }}</span>
+                    <span style="{{ card.vs }}">{{ card.value }}</span>
+                    <span style="{{ card.ss }}">{{ card.sub }}</span>
+                  </button>
+                </sc-for>
+              </div>
+            </sc-for>
+
+            <sc-if value="{{ showSalesChart }}" hint-placeholder-val="{{ true }}">
+            <div style="border:1px solid oklch(0.28 0.008 255);border-radius:14px;background:oklch(0.195 0.007 255);padding:18px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:16px">
+                <strong style="font-size:15px;font-weight:600">Sales vs purchase vs gross profit</strong>
+                <div style="display:flex;gap:16px">
+                  <sc-for list="{{ barLegend }}" as="bl" hint-placeholder-count="3">
+                    <div style="display:flex;align-items:center;gap:6px"><span style="{{ bl.dot }}"></span><span style="font-size:12px;color:oklch(0.70 0.012 255)">{{ bl.label }}</span></div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="display:flex;align-items:flex-end;gap:10px;height:210px">
+                <sc-for list="{{ barCols }}" as="col" hint-placeholder-count="9">
+                  <div style="flex:1;display:flex;flex-direction:column;gap:8px;height:100%;justify-content:flex-end">
+                    <div style="display:flex;align-items:flex-end;gap:3px;height:100%">
+                      <div style="{{ col.p }}" title="{{ col.pt }}"></div>
+                      <div style="{{ col.sl }}" title="{{ col.st }}"></div>
+                      <div style="{{ col.g }}" title="{{ col.gt }}"></div>
+                    </div>
+                    <button onClick="{{ col.go }}" style="font-size:11.5px;color:oklch(0.68 0.012 255);font-family:'IBM Plex Mono',monospace;text-align:center" style-hover="color:var(--acc, oklch(0.80 0.11 165))">{{ col.label }}</button>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            </sc-if>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px">
+              <sc-if value="{{ showProfitChart }}" hint-placeholder-val="{{ true }}">
+              <div style="border:1px solid oklch(0.28 0.008 255);border-radius:14px;background:oklch(0.195 0.007 255);padding:18px">
+                <strong style="font-size:15px;font-weight:600;display:block;margin-bottom:14px">Monthly net profit trend</strong>
+                <svg viewBox="0 0 620 200" style="width:100%;height:200px;overflow:visible">
+                  <sc-for list="{{ lineGrid }}" as="g" hint-placeholder-count="4">
+                    <line x1="0" x2="620" y1="{{ g.y }}" y2="{{ g.y }}" stroke="oklch(0.28 0.008 255)" stroke-width="1"></line>
+                  </sc-for>
+                  <polyline points="{{ linePoints }}" fill="none" stroke="var(--acc, oklch(0.80 0.11 165))" stroke-width="2.5" stroke-linejoin="round"></polyline>
+                  <polyline points="{{ revPoints }}" fill="none" stroke="oklch(0.62 0.05 255)" stroke-width="1.6" stroke-dasharray="5 4"></polyline>
+                  <sc-for list="{{ lineDots }}" as="d" hint-placeholder-count="9">
+                    <circle cx="{{ d.x }}" cy="{{ d.y }}" r="3.5" fill="var(--acc, oklch(0.80 0.11 165))"><title>{{ d.title }}</title></circle>
+                  </sc-for>
+                </svg>
+                <div style="display:flex;justify-content:space-between;margin-top:8px">
+                  <sc-for list="{{ lineLabels }}" as="l" hint-placeholder-count="9">
+                    <span style="font-size:11px;color:oklch(0.64 0.012 255);font-family:'IBM Plex Mono',monospace">{{ l }}</span>
+                  </sc-for>
+                </div>
+              </div>
+              </sc-if>
+
+              <sc-if value="{{ showExpenseChart }}" hint-placeholder-val="{{ true }}">
+              <div style="border:1px solid oklch(0.28 0.008 255);border-radius:14px;background:oklch(0.195 0.007 255);padding:18px;display:flex;flex-direction:column;gap:14px">
+                <strong style="font-size:15px;font-weight:600">Expense breakdown</strong>
+                <div style="display:flex;flex-direction:column;gap:16px;align-items:center">
+                  <svg viewBox="0 0 140 140" style="width:150px;height:150px;transform:rotate(-90deg)">
+                    <circle cx="70" cy="70" r="52" fill="none" stroke="oklch(0.26 0.008 255)" stroke-width="18"></circle>
+                    <sc-for list="{{ donut }}" as="seg" hint-placeholder-count="6">
+                      <circle cx="70" cy="70" r="52" fill="none" stroke="{{ seg.color }}" stroke-width="18" stroke-dasharray="{{ seg.dash }}" stroke-dashoffset="{{ seg.offset }}"><title>{{ seg.title }}</title></circle>
+                    </sc-for>
+                  </svg>
+                  <div style="display:flex;flex-direction:column;gap:7px;width:100%">
+                    <sc-for list="{{ donut }}" as="seg" hint-placeholder-count="6">
+                      <button onClick="{{ seg.go }}" style="display:flex;align-items:center;gap:9px;text-align:left;width:100%;padding-bottom:6px;border-bottom:1px solid oklch(0.245 0.008 255)">
+                        <span style="{{ seg.dot }}"></span>
+                        <span style="font-size:12.5px;color:oklch(0.78 0.012 255);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ seg.label }}</span>
+                        <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:oklch(0.68 0.012 255)">{{ seg.amount }}</span>
+                        <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;min-width:46px;text-align:right">{{ seg.pct }}</span>
+                      </button>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+              </sc-if>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px">
+              <sc-for list="{{ panels }}" as="panel" hint-placeholder-count="7">
+                <div style="border:1px solid oklch(0.28 0.008 255);border-radius:14px;background:oklch(0.195 0.007 255);padding:16px 18px;display:flex;flex-direction:column;gap:12px">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">
+                    <strong style="font-size:14px;font-weight:600">{{ panel.title }}</strong>
+                    <button onClick="{{ panel.go }}" style="font-size:11.5px;color:var(--acc, oklch(0.80 0.11 165));font-family:'IBM Plex Mono',monospace">{{ panel.cta }}</button>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:9px">
+                    <sc-for list="{{ panel.items }}" as="it" hint-placeholder-count="5">
+                      <button onClick="{{ it.go }}" style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;text-align:left;padding-bottom:8px;border-bottom:1px solid oklch(0.245 0.008 255);width:100%">
+                        <span style="display:flex;flex-direction:column;gap:2px;min-width:0">
+                          <span style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ it.a }}</span>
+                          <span style="font-size:11.5px;color:oklch(0.64 0.012 255);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ it.c }}</span>
+                        </span>
+                        <span style="{{ it.s }}">{{ it.b }}</span>
+                      </button>
+                    </sc-for>
+                    <sc-if value="{{ panel.empty }}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size:12.5px;color:oklch(0.62 0.012 255)">Nothing outstanding in this period.</span>
+                    </sc-if>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isAlerts }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:10px;max-width:1000px">
+            <sc-for list="{{ alertList }}" as="al" hint-placeholder-count="8">
+              <button onClick="{{ al.go }}" style="{{ al.s }}">
+                <span style="{{ al.tag }}">{{ al.sev }}</span>
+                <span style="display:flex;flex-direction:column;gap:3px;text-align:left;flex:1;min-width:0">
+                  <strong style="font-size:14px;font-weight:600">{{ al.title }}</strong>
+                  <span style="font-size:12.5px;color:oklch(0.72 0.012 255);text-wrap:pretty">{{ al.detail }}</span>
+                </span>
+                <span style="font-size:11.5px;color:oklch(0.62 0.012 255);font-family:'IBM Plex Mono',monospace">Open →</span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasFields }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;background:oklch(0.28 0.008 255);border:1px solid oklch(0.28 0.008 255);border-radius:14px;overflow:hidden">
+            <sc-for list="{{ fields }}" as="f" hint-placeholder-count="8">
+              <div style="background:oklch(0.195 0.007 255);padding:13px 15px;display:flex;flex-direction:column;gap:5px">
+                <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.07em;color:oklch(0.64 0.012 255);font-family:'IBM Plex Mono',monospace">{{ f.label }}</span>
+                <span style="{{ f.s }}">{{ f.value }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasSummary }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+            <sc-for list="{{ summary }}" as="sm" hint-placeholder-count="5">
+              <div style="border:1px solid oklch(0.28 0.008 255);border-radius:12px;background:oklch(0.195 0.007 255);padding:13px 15px;display:flex;flex-direction:column;gap:6px">
+                <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.07em;color:oklch(0.64 0.012 255);font-family:'IBM Plex Mono',monospace">{{ sm.label }}</span>
+                <span style="{{ sm.s }}">{{ sm.value }}</span>
+                <span style="font-size:11.5px;color:oklch(0.62 0.012 255)">{{ sm.sub }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasTabs }}" hint-placeholder-val="{{ false }}">
+          <div data-noprint="1" style="display:flex;gap:6px">
+            <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="3">
+              <button onClick="{{ tb.go }}" style="{{ tb.s }}">{{ tb.label }}</button>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasTrend }}" hint-placeholder-val="{{ false }}">
+          <div style="border:1px solid oklch(0.28 0.008 255);border-radius:14px;background:oklch(0.195 0.007 255);padding:18px">
+            <strong style="font-size:14px;font-weight:600;display:block;margin-bottom:14px">{{ trendTitle }}</strong>
+            <div style="display:flex;align-items:flex-end;gap:8px;height:170px">
+              <sc-for list="{{ trendCols }}" as="col" hint-placeholder-count="9">
+                <div style="flex:1;display:flex;flex-direction:column;gap:8px;height:100%;justify-content:flex-end">
+                  <div style="display:flex;align-items:flex-end;gap:3px;height:100%">
+                    <div style="{{ col.p }}" title="{{ col.pt }}"></div>
+                    <div style="{{ col.sl }}" title="{{ col.st }}"></div>
+                    <div style="{{ col.g }}" title="{{ col.gt }}"></div>
+                  </div>
+                  <span style="font-size:11px;color:oklch(0.66 0.012 255);font-family:'IBM Plex Mono',monospace;text-align:center">{{ col.label }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasTable }}" hint-placeholder-val="{{ false }}">
+          <div style="border:1px solid oklch(0.28 0.008 255);border-radius:14px;background:oklch(0.195 0.007 255);overflow:hidden">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:15px 18px;border-bottom:1px solid oklch(0.26 0.008 255);flex-wrap:wrap">
+              <strong style="font-size:14.5px;font-weight:600">{{ tableTitle }}</strong>
+              <span style="font-size:11.5px;color:oklch(0.64 0.012 255);font-family:'IBM Plex Mono',monospace">{{ tableNote }}</span>
+            </div>
+            <div style="overflow-x:auto">
+              <table style="width:100%;border-collapse:collapse;font-size:13px">
+                <thead>
+                  <tr>
+                    <sc-for list="{{ columns }}" as="col" hint-placeholder-count="7">
+                      <th style="{{ col.s }}" onClick="{{ col.sort }}">{{ col.label }}</th>
+                    </sc-for>
+                  </tr>
+                </thead>
+                <tbody>
+                  <sc-for list="{{ rows }}" as="row" hint-placeholder-count="10">
+                    <tr onClick="{{ row.go }}" style="{{ row.s }}">
+                      <sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="7">
+                        <td style="{{ cell.s }}"><span style="{{ cell.ts }}">{{ cell.v }}</span></td>
+                      </sc-for>
+                    </tr>
+                  </sc-for>
+                  <sc-if value="{{ hasTotals }}" hint-placeholder-val="{{ false }}">
+                    <tr>
+                      <sc-for list="{{ totals }}" as="cell" hint-placeholder-count="7">
+                        <td style="{{ cell.s }}"><span style="{{ cell.ts }}">{{ cell.v }}</span></td>
+                      </sc-for>
+                    </tr>
+                  </sc-if>
+                </tbody>
+              </table>
+            </div>
+            <sc-if value="{{ noRows }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:34px 18px;text-align:center;color:oklch(0.62 0.012 255);font-size:13px">No records match the selected period, filters or search.</div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasNote }}" hint-placeholder-val="{{ false }}">
+          <p style="margin:0;font-size:12.5px;color:oklch(0.64 0.012 255);max-width:95ch;text-wrap:pretty;font-style:italic">{{ note }}</p>
+        </sc-if>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:960},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;oklch(0.80 0.11 165)&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;oklch(0.80 0.11 165)&quot;,&quot;oklch(0.82 0.12 80)&quot;,&quot;oklch(0.76 0.10 250)&quot;,&quot;oklch(0.78 0.12 20)&quot;],&quot;section&quot;:&quot;Appearance&quot;},&quot;numbers&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Compact (12.4M)&quot;,&quot;options&quot;:[&quot;Compact (12.4M)&quot;,&quot;Full (12,400,000)&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Appearance&quot;},&quot;defaultRange&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;This year&quot;,&quot;options&quot;:[&quot;This week&quot;,&quot;This month&quot;,&quot;This quarter&quot;,&quot;This year&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Behaviour&quot;}}">
+class Component extends DCLogic {
+  state = {
+    ready: false, role: 'CEO', view: 'dashboard', rangeKey: 'thisYear',
+    custom: { start: '2026-01-01', end: '2026-09-01' }, customError: null,
+    filters: null, numbers: 'compact', query: '', sort: null, period: 'monthly',
+    ctx: null, stack: [],
+  };
+
+  componentDidMount() {
+    import('./re-data.js').then((M) => {
+      this.M = M;
+      this.setState({ ready: true, filters: { ...M.EMPTY_FILTERS }, numbers: this.props.numbers === 'Full (12,400,000)' ? 'full' : 'compact', rangeKey: this.props.defaultRange ? this.rangeKeyFromLabel(this.props.defaultRange) : 'thisYear' });
+    });
+    this.applyAccent();
+  }
+  componentDidUpdate() { this.applyAccent(); }
+  applyAccent() {
+    const a = this.props.accent || 'oklch(0.80 0.11 165)';
+    document.body.style.setProperty('--acc', a);
+  }
+  rangeKeyFromLabel(l) {
+    const m = { 'This month': 'thisMonth', 'This quarter': 'thisQuarter', 'This year': 'thisYear', 'This week': 'thisWeek' };
+    return m[l] || 'thisYear';
+  }
+
+  /* ---------------- helpers ---------------- */
+  get f() { return this.state.filters || (this.M ? { ...this.M.EMPTY_FILTERS } : {}); }
+  effFilters() {
+    const f = { ...this.f };
+    if (this.state.role === 'Agent') {
+      // "Assigned only": an agent sees their own transactions and the properties behind them.
+      const me = this.M.AGENT_SELF;
+      f.agent = me.id;
+      if (!this._assigned) this._assigned = this.M.DATA.sales.filter((s) => s.agentId === me.id).map((s) => s.propertyId);
+      f.propIds = this._assigned;
+    }
+    return f;
+  }
+  money(n) { return this.M.fmt(n, this.state.numbers); }
+  kpi() {
+    const M = this.M, f = this.effFilters();
+    const key = this.state.rangeKey + JSON.stringify(this.state.custom) + JSON.stringify(f);
+    if (this._kk !== key) { this._kk = key; this._kv = M.computeKPIs(M.rangeFor(this.state.rangeKey, this.state.custom), f); }
+    return this._kv;
+  }
+  months() {
+    const key = 'm' + JSON.stringify(this.effFilters());
+    if (this._mk !== key) { this._mk = key; this._mv = this.M.monthlySeries(2026, this.effFilters()); }
+    return this._mv;
+  }
+  weeks() {
+    const key = 'w' + JSON.stringify(this.effFilters());
+    if (this._wk !== key) { this._wk = key; this._wv = this.M.weeklySeries(8, this.effFilters()); }
+    return this._wv;
+  }
+  go = (view, ctx) => {
+    const denied = this.M && this.M.ROLES[this.state.role].deny.indexOf(view) >= 0;
+    const stack = view === 'dashboard' ? [] : [{ view: this.state.view, label: this.titleOf(this.state.view) }];
+    this.setState({ view, ctx: ctx || null, query: '', sort: null, stack: denied ? [] : stack });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  drill = (view, ctx, filterPatch) => () => {
+    if (filterPatch) this.setState({ filters: { ...this.f, ...filterPatch } });
+    this.go(view, ctx);
+  };
+
+  /* ---------------- styles ---------------- */
+  MONO = "'IBM Plex Mono',monospace";
+  tone(v, invert) {
+    if (v > 0) return invert ? 'oklch(0.74 0.13 25)' : 'oklch(0.82 0.11 165)';
+    if (v < 0) return invert ? 'oklch(0.82 0.11 165)' : 'oklch(0.74 0.13 25)';
+    return 'oklch(0.80 0.008 255)';
+  }
+  td(align, opts = {}) {
+    return {
+      padding: '10px 14px', borderBottom: '1px solid oklch(0.245 0.008 255)',
+      textAlign: align || 'left', whiteSpace: 'nowrap', verticalAlign: 'middle',
+      fontFamily: align === 'right' ? this.MONO : undefined,
+      fontVariantNumeric: 'tabular-nums', color: opts.color, fontWeight: opts.weight,
+      background: opts.bg, fontSize: opts.size || '13px',
+    };
+  }
+  cellText(v) { return { v: String(v), s: this.td('left'), ts: {}, raw: String(v).toLowerCase() }; }
+  cellStrong(v) { return { v: String(v), s: this.td('left', { weight: 600 }), ts: {}, raw: String(v).toLowerCase() }; }
+  cellMoney(v, opts = {}) {
+    return { v: this.money(v), s: this.td('right', { color: opts.signed ? this.tone(v, opts.invert) : undefined, weight: opts.weight }), ts: {}, raw: v };
+  }
+  cellNum(v) { return { v: this.M.fmtNum(v), s: this.td('right'), ts: {}, raw: v }; }
+  cellDate(d) { return { v: this.M.fmtDate(d), s: this.td('left', { color: 'oklch(0.74 0.012 255)' }), ts: { fontFamily: this.MONO, fontSize: '12px' }, raw: d instanceof Date ? d.getTime() : 0 }; }
+  cellTag(v) {
+    const map = {
+      Paid: ['oklch(0.82 0.11 165)', 'oklch(0.27 0.05 165)'], Completed: ['oklch(0.82 0.11 165)', 'oklch(0.27 0.05 165)'],
+      Available: ['oklch(0.82 0.11 165)', 'oklch(0.27 0.05 165)'], Sold: ['oklch(0.74 0.05 255)', 'oklch(0.27 0.02 255)'],
+      Overdue: ['oklch(0.78 0.13 25)', 'oklch(0.28 0.06 25)'], Unpaid: ['oklch(0.78 0.13 25)', 'oklch(0.28 0.06 25)'],
+      Pending: ['oklch(0.84 0.12 78)', 'oklch(0.29 0.05 78)'], Reserved: ['oklch(0.84 0.12 78)', 'oklch(0.29 0.05 78)'],
+      'Partially Paid': ['oklch(0.84 0.12 78)', 'oklch(0.29 0.05 78)'], 'In Payment': ['oklch(0.84 0.12 78)', 'oklch(0.29 0.05 78)'],
+      'Under Process': ['oklch(0.76 0.06 300)', 'oklch(0.28 0.03 300)'],
+    };
+    const c = map[v] || ['oklch(0.80 0.008 255)', 'oklch(0.26 0.008 255)'];
+    return {
+      v: String(v), s: this.td('left'), raw: String(v).toLowerCase(),
+      ts: { background: c[1], color: c[0], padding: '3px 9px', borderRadius: '999px', fontSize: '11.5px', fontWeight: 600, whiteSpace: 'nowrap' },
+    };
+  }
+
+  /* ---------------- nav ---------------- */
+  NAV = [
+    ['Overview', [['dashboard', 'CEO Dashboard'], ['alerts', 'Alerts & notifications']]],
+    ['Properties', [['purchases', 'Purchase reporting'], ['sales', 'Selling reporting'], ['inventory', 'Inventory & value'], ['performance', 'Property performance']]],
+    ['Agents', [['agents', 'Top agents'], ['commissions', 'Commission ledger']]],
+    ['Costs', [['expenses', 'Expense management'], ['salaries', 'Employee salaries'], ['bills', 'Bills management'], ['tax', 'Tax reporting'], ['zakat', 'Zakat reporting']]],
+    ['Financials', [['profit', 'Profit tracking'], ['pnl', 'Profit & loss'], ['cashflow', 'Cash flow'], ['receivables', 'Receivables'], ['payables', 'Payables']]],
+    ['System', [['transactions', 'Transaction ledger'], ['audit', 'Audit trail'], ['permissions', 'Report permissions']]],
+  ];
+  titleOf(v) {
+    for (const g of this.NAV) for (const it of g[1]) if (it[0] === v) return it[1];
+    return v === 'detail' ? 'Detail' : v;
+  }
+
+  SUBTITLES = {
+    dashboard: 'Every figure is computed from the underlying transactions and is clickable — drill down to the records behind any number.',
+    alerts: 'Financial and property exceptions raised against live balances, due dates and holding periods.',
+    purchases: 'Complete acquisition record per property: purchase price plus registration, legal, development and other costs.',
+    sales: 'Every sale with buyer, agent, receipts, outstanding balance, commission, tax and net revenue.',
+    inventory: 'All currently owned / unsold stock with cost value, current market value and potential profit.',
+    performance: 'Per-property profitability — the most and least profitable assets in the portfolio.',
+    agents: 'Ranked by sales value generated in the selected period, with profit and commission earned.',
+    commissions: 'Transaction-level commission record: percentage, amount, paid, outstanding and payment status.',
+    expenses: 'All company expenses, categorised. Utilities and rent are tracked separately under Bills.',
+    salaries: 'Monthly payroll: basic, bonus, allowance, deduction and net paid per employee.',
+    bills: 'Recurring and one-time bills with billing period, due date, outstanding amount and status.',
+    tax: 'All tax obligations with authority, due date, paid date and payment reference.',
+    zakat: 'Zakat is accounted separately from operating expenses while still appearing in the overall summary.',
+    profit: 'Weekly, monthly and yearly profit derived from sales, purchase cost, commissions and expenses.',
+    pnl: 'Statutory-style statement: revenue, cost of sales, gross profit, operating expenses, other obligations, net profit.',
+    cashflow: 'Where money came from and where it went in the selected period.',
+    receivables: 'Money expected from customers, with days overdue against the 60-day payment terms.',
+    payables: 'Money the company owes — sellers, agents, employees, vendors, tax authority and utilities.',
+    transactions: 'The single ledger every dashboard figure traces back to.',
+    audit: 'Financial records are never deleted — they are voided, reversed or adjusted, and every change is logged.',
+    permissions: 'Access levels by role. Switch role in the header to see the dashboard as that user sees it.',
+    detail: '',
+  };
+
+  /* ---------------- view builders ---------------- */
+  build() {
+    const M = this.M, k = this.kpi(), f = this.effFilters(), D = M.DATA;
+    const v = this.state.view, ctx = this.state.ctx;
+    const props = D.properties.filter((p) => M.propMatch(p, f));
+    const ids = new Set(props.map((p) => p.id));
+    const inR = M.inRange, r = k.range;
+    const out = { summary: [], fields: [], table: null, note: '', tabs: null, trend: null };
+
+    if (v === 'purchases') {
+      const items = props.filter((p) => inR(p.purchaseDate, r));
+      out.summary = [
+        ['Properties purchased', M.fmtNum(items.length), 'in ' + r.label],
+        ['Purchase price', this.money(items.reduce((a, p) => a + p.price, 0)), 'excl. acquisition costs'],
+        ['Acquisition costs', this.money(items.reduce((a, p) => a + (p.totalCost - p.price), 0)), 'registration · legal · development'],
+        ['Total purchase cost', this.money(items.reduce((a, p) => a + p.totalCost, 0)), 'price + purchase-related expenses'],
+        ['Still payable to sellers', this.money(items.reduce((a, p) => a + p.remaining, 0)), 'outstanding purchase balance'],
+      ];
+      out.table = {
+        title: 'Property purchase register',
+        columns: [['Property ID'], ['Property'], ['Type'], ['Project'], ['Block / Unit'], ['Size'], ['Seller'], ['Purchase date'], ['Purchase price', 'right'], ['Registration', 'right'], ['Legal', 'right'], ['Development', 'right'], ['Other', 'right'], ['Total cost', 'right'], ['Paid', 'right'], ['Remaining', 'right'], ['Payment'], ['Status']],
+        rows: items.map((p) => ({
+          cells: [this.cellText(p.id), this.cellStrong(p.name), this.cellText(p.type), this.cellText(p.project), this.cellText(p.block + ' / ' + p.unit), this.cellText(p.size), this.cellText(p.seller), this.cellDate(p.purchaseDate), this.cellMoney(p.price), this.cellMoney(p.extras.registration), this.cellMoney(p.extras.legal), this.cellMoney(p.extras.development), this.cellMoney(p.extras.other), this.cellMoney(p.totalCost, { weight: 600 }), this.cellMoney(p.paid), this.cellMoney(p.remaining, { signed: true, invert: true }), this.cellTag(p.payStatus), this.cellTag(p.status)],
+          go: this.drill('detail', { kind: 'property', id: p.id }),
+        })),
+        totalCols: [8, 9, 10, 11, 12, 13, 14, 15],
+      };
+    } else if (v === 'sales') {
+      const items = D.sales.filter((s) => M.saleMatch(s, f, ids) && inR(s.date, r));
+      out.summary = [
+        ['Properties sold', M.fmtNum(items.length), 'in ' + r.label],
+        ['Selling revenue', this.money(items.reduce((a, s) => a + s.sellingPrice, 0)), 'contracted value'],
+        ['Amount received', this.money(items.reduce((a, s) => a + s.received, 0)), 'cash collected'],
+        ['Outstanding', this.money(items.reduce((a, s) => a + s.outstanding, 0)), 'receivable from buyers'],
+        ['Net sale revenue', this.money(items.reduce((a, s) => a + s.netRevenue, 0)), 'after commission, tax, selling costs'],
+      ];
+      out.table = {
+        title: 'Property sales register',
+        columns: [['Sale ID'], ['Property'], ['Buyer'], ['Agent'], ['Sale date'], ['Selling price', 'right'], ['Received', 'right'], ['Outstanding', 'right'], ['Method'], ['Commission %', 'right'], ['Commission', 'right'], ['Tax', 'right'], ['Other costs', 'right'], ['Net revenue', 'right'], ['Gross profit', 'right'], ['Payment'], ['Sale status']],
+        rows: items.map((s) => ({
+          cells: [this.cellText(s.id), this.cellStrong(s.property), this.cellText(s.buyer), this.cellText(s.agent), this.cellDate(s.date), this.cellMoney(s.sellingPrice, { weight: 600 }), this.cellMoney(s.received), this.cellMoney(s.outstanding, { signed: true, invert: true }), this.cellText(s.method), { v: s.commissionPct.toFixed(2) + '%', s: this.td('right'), ts: {}, raw: s.commissionPct }, this.cellMoney(s.commission), this.cellMoney(s.tax), this.cellMoney(s.otherExpenses), this.cellMoney(s.netRevenue), this.cellMoney(s.grossProfit, { signed: true }), this.cellTag(s.payStatus), this.cellTag(s.saleStatus)],
+          go: this.drill('detail', { kind: 'property', id: s.propertyId }),
+        })),
+        totalCols: [5, 6, 7, 10, 11, 12, 13, 14],
+      };
+    } else if (v === 'inventory') {
+      const items = props.filter((p) => p.status !== 'Sold');
+      out.summary = [
+        ['Unsold properties', M.fmtNum(items.length), 'available · reserved · under process'],
+        ['Cost value', this.money(items.reduce((a, p) => a + p.totalCost, 0)), 'amount originally invested'],
+        ['Current market value', this.money(items.reduce((a, p) => a + p.currentValue, 0)), 'current estimated value'],
+        ['Potential profit', this.money(items.reduce((a, p) => a + (p.currentValue - p.totalCost), 0)), 'market value − cost'],
+      ];
+      out.table = {
+        title: 'Current property inventory',
+        columns: [['Property ID'], ['Property'], ['Project'], ['Location'], ['Type'], ['Size'], ['Purchase date'], ['Purchase cost', 'right'], ['Current value', 'right'], ['Potential profit', 'right'], ['Upside %', 'right'], ['Held (days)', 'right'], ['Status']],
+        rows: items.map((p) => ({
+          cells: [this.cellText(p.id), this.cellStrong(p.name), this.cellText(p.project), this.cellText(p.location), this.cellText(p.type), this.cellText(p.size), this.cellDate(p.purchaseDate), this.cellMoney(p.totalCost), this.cellMoney(p.currentValue), this.cellMoney(p.currentValue - p.totalCost, { signed: true }), { v: M.pctOf(p.currentValue - p.totalCost, p.totalCost).toFixed(1) + '%', s: this.td('right', { color: this.tone(p.currentValue - p.totalCost) }), ts: {}, raw: M.pctOf(p.currentValue - p.totalCost, p.totalCost) }, this.cellNum(p.heldDays), this.cellTag(p.status)],
+          go: this.drill('detail', { kind: 'property', id: p.id }),
+        })),
+        totalCols: [7, 8, 9],
+      };
+    } else if (v === 'performance') {
+      const items = D.sales.filter((s) => M.saleMatch(s, f, ids)).map((s) => ({ ...s, margin: M.pctOf(s.netProfit, s.sellingPrice) })).sort((a, b) => b.netProfit - a.netProfit);
+      out.summary = [
+        ['Best performer', items.length ? items[0].property.split(' · ')[0] : '—', items.length ? this.money(items[0].netProfit) + ' net' : ''],
+        ['Weakest performer', items.length ? items[items.length - 1].property.split(' · ')[0] : '—', items.length ? this.money(items[items.length - 1].netProfit) + ' net' : ''],
+        ['Average net margin', (items.reduce((a, s) => a + s.margin, 0) / (items.length || 1)).toFixed(1) + '%', 'across ' + items.length + ' completed sales'],
+      ];
+      out.table = {
+        title: 'Property profitability (all completed sales)',
+        columns: [['Property'], ['Total cost', 'right'], ['Selling price', 'right'], ['Gross profit', 'right'], ['Commission', 'right'], ['Tax', 'right'], ['Other', 'right'], ['Net profit', 'right'], ['Net margin', 'right'], ['Agent']],
+        rows: items.map((s) => ({
+          cells: [this.cellStrong(s.property), this.cellMoney(s.propertyCost), this.cellMoney(s.sellingPrice), this.cellMoney(s.grossProfit, { signed: true }), this.cellMoney(s.commission), this.cellMoney(s.tax), this.cellMoney(s.otherExpenses), this.cellMoney(s.netProfit, { signed: true, weight: 600 }), { v: s.margin.toFixed(1) + '%', s: this.td('right', { color: this.tone(s.netProfit) }), ts: {}, raw: s.margin }, this.cellText(s.agent)],
+          go: this.drill('detail', { kind: 'property', id: s.propertyId }),
+        })),
+        totalCols: [1, 2, 3, 4, 5, 6, 7],
+      };
+    } else if (v === 'agents') {
+      const rowsA = M.agentSummary(r, f);
+      out.summary = [
+        ['Total commission', this.money(k.commission), 'earned in ' + r.label],
+        ['Commission paid', this.money(k.commissionPaid), M.pctOf(k.commissionPaid, k.commission).toFixed(0) + '% settled'],
+        ['Commission outstanding', this.money(k.commissionOut), 'payable to agents'],
+        ['Active agents', M.fmtNum(rowsA.filter((a) => a.transactions > 0).length) + ' / ' + rowsA.length, 'with transactions in period'],
+      ];
+      out.table = {
+        title: 'Top performing agents',
+        columns: [['Rank', 'right'], ['Agent'], ['Office'], ['Transactions', 'right'], ['Sales value', 'right'], ['Profit generated', 'right'], ['Commission', 'right'], ['Paid', 'right'], ['Outstanding', 'right'], ['Rate', 'right']],
+        rows: rowsA.map((a, i) => ({
+          cells: [this.cellNum(i + 1), this.cellStrong(a.name), this.cellText(a.office), this.cellNum(a.transactions), this.cellMoney(a.salesValue, { weight: 600 }), this.cellMoney(a.profit, { signed: true }), this.cellMoney(a.commission), this.cellMoney(a.paid), this.cellMoney(a.outstanding, { signed: true, invert: true }), { v: a.rate.toFixed(1) + '%', s: this.td('right'), ts: {}, raw: a.rate }],
+          go: this.drill('detail', { kind: 'agent', id: a.id }),
+        })),
+        totalCols: [3, 4, 5, 6, 7, 8],
+      };
+    } else if (v === 'commissions') {
+      const items = D.commissions.filter((c) => ids.has(c.propertyId) && inR(c.date, r) && (f.agent === 'all' || c.agentId === f.agent));
+      out.summary = [
+        ['Total commission', this.money(items.reduce((a, c) => a + c.amount, 0)), M.fmtNum(items.length) + ' transactions'],
+        ['Paid', this.money(items.reduce((a, c) => a + c.paid, 0)), 'settled with agents'],
+        ['Outstanding', this.money(items.reduce((a, c) => a + c.outstanding, 0)), 'still payable'],
+        ['Overdue', this.money(items.filter((c) => c.status === 'Overdue').reduce((a, c) => a + c.outstanding, 0)), M.fmtNum(items.filter((c) => c.status === 'Overdue').length) + ' entries past 30 days'],
+      ];
+      out.table = {
+        title: 'Agent commission ledger',
+        columns: [['Commission ID'], ['Agent'], ['Agent ID'], ['Property'], ['Counterparty'], ['Type'], ['Date'], ['Rate', 'right'], ['Commission', 'right'], ['Paid', 'right'], ['Outstanding', 'right'], ['Payment date'], ['Status']],
+        rows: items.map((c) => ({
+          cells: [this.cellText(c.id), this.cellStrong(c.agent), this.cellText(c.agentId), this.cellText(c.property), this.cellText(c.counterparty), this.cellText(c.txnType), this.cellDate(c.date), { v: c.pct.toFixed(2) + '%', s: this.td('right'), ts: {}, raw: c.pct }, this.cellMoney(c.amount, { weight: 600 }), this.cellMoney(c.paid), this.cellMoney(c.outstanding, { signed: true, invert: true }), this.cellText(c.paidDate), this.cellTag(c.status)],
+          go: this.drill('detail', { kind: 'agent', id: c.agentId }),
+        })),
+        totalCols: [8, 9, 10],
+      };
+    } else if (v === 'expenses') {
+      const items = D.expenses.filter((e) => inR(e.date, r) && (f.office === 'all' || e.office === f.office));
+      const groups = {};
+      items.forEach((e) => { groups[e.group] = (groups[e.group] || 0) + e.amount; });
+      out.summary = Object.keys(groups).map((g) => [g, this.money(groups[g]), M.pctOf(groups[g], items.reduce((a, e) => a + e.amount, 0)).toFixed(0) + '% of expenses']);
+      out.table = {
+        title: 'Expense register',
+        columns: [['Expense ID'], ['Category group'], ['Category'], ['Vendor'], ['Date'], ['Office / branch'], ['Amount', 'right'], ['Paid', 'right'], ['Outstanding', 'right'], ['Method'], ['Status']],
+        rows: items.map((e) => ({
+          cells: [this.cellText(e.id), this.cellText(e.group), this.cellStrong(e.category), this.cellText(e.vendor), this.cellDate(e.date), this.cellText(e.office), this.cellMoney(e.amount, { weight: 600 }), this.cellMoney(e.paid), this.cellMoney(e.outstanding, { signed: true, invert: true }), this.cellText(e.method), this.cellTag(e.status)],
+          go: this.drill('transactions', null),
+        })),
+        totalCols: [6, 7, 8],
+      };
+      out.note = 'Utilities, rent and other recurring charges are recorded under Bills so they are never double-counted here. Administrators can add further categories.';
+    } else if (v === 'salaries') {
+      const items = D.salaries.filter((s) => inR(s.date, r) && (f.office === 'all' || s.office === f.office));
+      out.summary = [
+        ['Total payroll', this.money(items.reduce((a, s) => a + s.net, 0)), M.fmtNum(items.length) + ' payslips'],
+        ['Paid', this.money(items.filter((s) => s.status === 'Paid').reduce((a, s) => a + s.net, 0)), 'disbursed'],
+        ['Pending', this.money(items.filter((s) => s.status !== 'Paid').reduce((a, s) => a + s.net, 0)), 'awaiting payment run'],
+        ['Bonuses & allowances', this.money(items.reduce((a, s) => a + s.bonus + s.allowance, 0)), 'on top of basic salary'],
+      ];
+      out.table = {
+        title: 'Employee salary register',
+        columns: [['Payslip'], ['Employee'], ['Department'], ['Month'], ['Basic', 'right'], ['Bonus', 'right'], ['Allowance', 'right'], ['Deduction', 'right'], ['Net paid', 'right'], ['Payment date'], ['Status']],
+        rows: items.map((s) => ({
+          cells: [this.cellText(s.id), this.cellStrong(s.employee), this.cellText(s.dept), this.cellText(s.monthLabel), this.cellMoney(s.basic), this.cellMoney(s.bonus), this.cellMoney(s.allowance), this.cellMoney(s.deduction, { signed: true, invert: true }), this.cellMoney(s.net, { weight: 600 }), this.cellDate(s.date), this.cellTag(s.status)],
+        })),
+        totalCols: [4, 5, 6, 7, 8],
+      };
+    } else if (v === 'bills') {
+      const items = D.bills.filter((b) => inR(b.dueDate, r) && (f.office === 'all' || b.office === f.office));
+      out.summary = [
+        ['Billed', this.money(items.reduce((a, b) => a + b.amount, 0)), M.fmtNum(items.length) + ' bills'],
+        ['Paid', this.money(items.reduce((a, b) => a + b.paid, 0)), 'settled'],
+        ['Outstanding', this.money(items.reduce((a, b) => a + b.outstanding, 0)), 'unpaid balance'],
+        ['Overdue', this.money(items.filter((b) => b.status === 'Overdue').reduce((a, b) => a + b.outstanding, 0)), M.fmtNum(items.filter((b) => b.status === 'Overdue').length) + ' bills past due date'],
+      ];
+      out.table = {
+        title: 'Bills register',
+        columns: [['Bill ID'], ['Bill type'], ['Vendor'], ['Bill number'], ['Billing period'], ['Due date'], ['Amount', 'right'], ['Paid', 'right'], ['Outstanding', 'right'], ['Payment date'], ['Status'], ['Attachment']],
+        rows: items.map((b) => ({
+          cells: [this.cellText(b.id), this.cellStrong(b.type), this.cellText(b.vendor), this.cellText(b.number), this.cellText(b.period), this.cellDate(b.dueDate), this.cellMoney(b.amount, { weight: 600 }), this.cellMoney(b.paid), this.cellMoney(b.outstanding, { signed: true, invert: true }), this.cellDate(b.paidDate), this.cellTag(b.status), this.cellText(b.attachment)],
+        })),
+        totalCols: [6, 7, 8],
+      };
+    } else if (v === 'tax') {
+      const items = D.taxes.filter((t) => inR(t.date, r) && (f.office === 'all' || t.office === f.office));
+      out.summary = [
+        ['Total tax', this.money(items.reduce((a, t) => a + t.amount, 0)), M.fmtNum(items.length) + ' obligations'],
+        ['Tax paid', this.money(items.reduce((a, t) => a + t.paid, 0)), 'settled with FBR'],
+        ['Tax outstanding', this.money(items.reduce((a, t) => a + t.outstanding, 0)), 'unpaid'],
+        ['Due within 30 days', this.money(k.taxDueSoon), 'upcoming obligations'],
+      ];
+      out.table = {
+        title: 'Tax register',
+        columns: [['Tax ID'], ['Tax type'], ['Property / transaction'], ['Taxpayer'], ['Authority'], ['Amount', 'right'], ['Due date'], ['Paid date'], ['Outstanding', 'right'], ['Status'], ['Attachment']],
+        rows: items.map((t) => ({
+          cells: [this.cellText(t.id), this.cellStrong(t.type), this.cellText(t.property), this.cellText(t.taxpayer), this.cellText(t.authority), this.cellMoney(t.amount, { weight: 600 }), this.cellDate(t.dueDate), this.cellDate(t.paidDate), this.cellMoney(t.outstanding, { signed: true, invert: true }), this.cellTag(t.status), this.cellText(t.attachment)],
+        })),
+        totalCols: [5, 8],
+      };
+    } else if (v === 'zakat') {
+      const z = D.zakatSummary;
+      out.summary = [
+        ['Eligible assets', this.money(z.eligibleAssets), 'assessed asset base'],
+        ['Zakatable amount', this.money(z.zakatable), 'after exclusions'],
+        ['Calculated zakat', this.money(z.calculated), 'at ' + z.rate + '%'],
+        ['Paid', this.money(z.paid), M.pctOf(z.paid, z.calculated).toFixed(0) + '% of obligation'],
+        ['Remaining', this.money(z.remaining), 'still to disburse'],
+      ];
+      out.table = {
+        title: 'Zakat register',
+        columns: [['Zakat ID'], ['Calculation period'], ['Eligible assets', 'right'], ['Zakatable amount', 'right'], ['Rate', 'right'], ['Calculated', 'right'], ['Amount paid', 'right'], ['Payment date'], ['Reference'], ['Status']],
+        rows: D.zakat.map((zz) => ({
+          cells: [this.cellText(zz.id), this.cellStrong(zz.period), this.cellMoney(zz.eligibleAssets), this.cellMoney(zz.zakatable), this.cellText(zz.rate), this.cellMoney(zz.calculated), this.cellMoney(zz.amount, { weight: 600 }), this.cellDate(zz.date), this.cellText(zz.ref), this.cellTag(zz.status)],
+        })),
+        totalCols: [6],
+      };
+      out.note = 'Zakat is kept separate from normal operating expenses in the ledger, while still being subtracted in the CEO net-profit summary.';
+    } else if (v === 'profit') {
+      const period = this.state.period;
+      out.tabs = [['weekly', 'Weekly'], ['monthly', 'Monthly'], ['yearly', 'Yearly']];
+      const series = period === 'weekly' ? this.weeks() : this.months();
+      const cols = [['Period'], ['Purchase cost', 'right'], ['Sales', 'right'], ['Gross profit', 'right'], ['Commission', 'right'], ['Salaries', 'right'], ['Expenses & bills', 'right'], ['Tax', 'right'], ['Zakat', 'right'], ['Net profit', 'right'], ['Net margin', 'right']];
+      const rowsP = series.map((s) => {
+        const kk = s.k, opEx = kk.officeExp + kk.marketing + kk.propertyExp + kk.employeeExp + kk.other + kk.bills;
+        return {
+          cells: [this.cellStrong(period === 'weekly' ? s.full : s.full), this.cellMoney(kk.purchaseCost), this.cellMoney(kk.salesRevenue), this.cellMoney(kk.grossProfit, { signed: true }), this.cellMoney(kk.commission), this.cellMoney(kk.salaries), this.cellMoney(opEx), this.cellMoney(kk.tax), this.cellMoney(kk.zakat), this.cellMoney(kk.netProfit, { signed: true, weight: 600 }), { v: kk.netMargin.toFixed(1) + '%', s: this.td('right', { color: this.tone(kk.netProfit) }), ts: {}, raw: kk.netMargin }],
+          go: this.drill('transactions', null),
+        };
+      });
+      const sum = series.reduce((a, s) => a + s.k.netProfit, 0);
+      out.summary = [
+        [period === 'weekly' ? 'Last 8 weeks net profit' : 'FY 2026 net profit to date', this.money(sum), period === 'weekly' ? 'rolling 8-week window' : 'Jan → ' + series[series.length - 1].label],
+        ['Best period', this.money(Math.max(...series.map((s) => s.k.netProfit))), series.reduce((b, s) => (s.k.netProfit > b.k.netProfit ? s : b), series[0]).full],
+        ['Weakest period', this.money(Math.min(...series.map((s) => s.k.netProfit))), series.reduce((b, s) => (s.k.netProfit < b.k.netProfit ? s : b), series[0]).full],
+        ['Average per period', this.money(sum / series.length), M.fmtNum(series.length) + ' periods'],
+      ];
+      out.trend = { title: period === 'weekly' ? 'Weekly purchase · sales · net profit' : 'Monthly purchase · sales · net profit', series };
+      out.table = { title: (period === 'weekly' ? 'Weekly' : period === 'monthly' ? 'Monthly' : 'Yearly') + ' profit report', columns: cols, rows: rowsP, totalCols: [1, 2, 3, 4, 5, 6, 7, 8, 9] };
+      if (period === 'yearly') {
+        out.table.title = 'Yearly profit report — FY 2026 by month';
+      }
+    } else if (v === 'pnl') {
+      const opEx = [['Agent Commission', k.commission], ['Employee Salaries', k.salaries], ['Office Expenses', k.officeExp], ['Marketing', k.marketing], ['Bills & Utilities', k.bills], ['Property Expenses', k.propertyExp], ['Employee Benefits', k.employeeExp], ['Other Expenses', k.other]];
+      const line = (label, val, style) => {
+        const bold = style === 'total' || style === 'sub';
+        return {
+          cells: [
+            { v: label, s: this.td('left', { weight: bold ? 700 : style === 'head' ? 600 : 400, color: style === 'head' ? 'oklch(0.66 0.012 255)' : undefined, bg: style === 'total' ? 'oklch(0.225 0.008 255)' : undefined, size: style === 'head' ? '11.5px' : '13px' }), ts: style === 'head' ? { textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: this.MONO } : {}, raw: label.toLowerCase() },
+            { v: val === null ? '' : this.money(val), s: this.td('right', { weight: bold ? 700 : 400, color: style === 'total' ? this.tone(val) : undefined, bg: style === 'total' ? 'oklch(0.225 0.008 255)' : undefined, size: style === 'total' ? '14px' : '13px' }), ts: {}, raw: val || 0 },
+          ],
+        };
+      };
+      out.summary = [
+        ['Revenue', this.money(k.salesRevenue + 0), 'property sales'],
+        ['Gross profit', this.money(k.grossProfit), k.grossMargin.toFixed(1) + '% margin'],
+        ['Total expenses', this.money(k.totalExpenses), 'incl. tax & zakat'],
+        ['Net profit', this.money(k.netProfit), k.netMargin.toFixed(1) + '% net margin'],
+      ];
+      out.table = {
+        title: 'Profit & loss statement — ' + r.label,
+        columns: [['Line item'], ['Amount', 'right']],
+        rows: [
+          line('Revenue', null, 'head'), line('Property Sales', k.salesRevenue), line('Other Revenue', 0),
+          line('Cost of sales', null, 'head'), line('Property Purchase Cost', k.purchasePrice), line('Property Acquisition Costs', k.acquisitionCosts),
+          line('Gross Profit  (revenue − cost of sales)', k.grossProfit, 'total'),
+          line('Operating expenses', null, 'head'), ...opEx.map((e) => line(e[0], e[1])),
+          line('Other financial obligations', null, 'head'), line('Taxes', k.tax), line('Zakat', k.zakat),
+          line('Total Expenses', k.totalExpenses, 'sub'),
+          line('NET PROFIT  (gross profit − all applicable expenses)', k.netProfit, 'total'),
+        ],
+      };
+      out.note = 'Supported periods: weekly, monthly, quarterly, yearly and custom range — set from the header. Gross profit follows the requirement definition: total selling revenue − total purchase cost for the period.';
+    } else if (v === 'cashflow') {
+      const pay = D.payments.filter((p) => inR(p.date, r) && (f.office === 'all' || p.office === f.office));
+      const roll = {};
+      pay.forEach((p) => {
+        const key = p.dir + '|' + p.category;
+        roll[key] = roll[key] || { dir: p.dir, category: p.category, amount: 0, count: 0 };
+        roll[key].amount += p.amount; roll[key].count++;
+      });
+      const list = Object.values(roll).sort((a, b) => (a.dir === b.dir ? b.amount - a.amount : a.dir === 'in' ? -1 : 1));
+      out.summary = [
+        ['Total cash in', this.money(k.cashIn), 'sales, receipts, other income'],
+        ['Total cash out', this.money(k.cashOut), 'purchases, expenses, obligations'],
+        ['Net cash flow', this.money(k.netCash), k.netCash >= 0 ? 'positive position' : 'net outflow'],
+        ['Transactions', M.fmtNum(pay.length), 'posted in period'],
+      ];
+      out.table = {
+        title: 'Cash flow by category',
+        columns: [['Direction'], ['Category'], ['Transactions', 'right'], ['Amount', 'right'], ['Share of direction', 'right']],
+        rows: list.map((x) => ({
+          cells: [this.cellTag(x.dir === 'in' ? 'Paid' : 'Pending'), this.cellStrong(x.category), this.cellNum(x.count), this.cellMoney(x.amount, { signed: x.dir === 'out', invert: x.dir === 'out' }), { v: M.pctOf(x.amount, x.dir === 'in' ? k.cashIn : k.cashOut).toFixed(1) + '%', s: this.td('right'), ts: {}, raw: M.pctOf(x.amount, x.dir === 'in' ? k.cashIn : k.cashOut) }],
+          go: this.drill('transactions', null),
+        })),
+        totalCols: [2, 3],
+      };
+      out.table.rows.forEach((row) => { row.cells[0].v = row.cells[0].raw === 'paid' ? 'Cash in' : 'Cash out'; });
+      out.note = 'Inflows: property sales, customer payments, other income and investments. Outflows: purchases, commissions, salaries, office expenses, bills, taxes, zakat, marketing and property expenses.';
+    } else if (v === 'receivables') {
+      const items = M.receivables(f);
+      out.summary = [
+        ['Total receivable', this.money(items.reduce((a, s) => a + s.outstanding, 0)), M.fmtNum(items.length) + ' customers'],
+        ['Overdue', this.money(items.filter((s) => s.daysOverdue > 0).reduce((a, s) => a + s.outstanding, 0)), M.fmtNum(items.filter((s) => s.daysOverdue > 0).length) + ' past 60-day terms'],
+        ['Largest exposure', items.length ? this.money(items[0].outstanding) : this.money(0), items.length ? items[0].buyer : '—'],
+        ['Collected to date', this.money(D.sales.reduce((a, s) => a + s.received, 0)), 'lifetime receipts'],
+      ];
+      out.table = {
+        title: 'Accounts receivable',
+        columns: [['Customer'], ['Property'], ['Agent'], ['Sale amount', 'right'], ['Received', 'right'], ['Outstanding', 'right'], ['Due date'], ['Days overdue', 'right'], ['Status']],
+        rows: items.map((s) => ({
+          cells: [this.cellStrong(s.buyer), this.cellText(s.property), this.cellText(s.agent), this.cellMoney(s.sellingPrice), this.cellMoney(s.received), this.cellMoney(s.outstanding, { signed: true, invert: true, weight: 600 }), this.cellDate(s.dueDate), { v: s.daysOverdue ? M.fmtNum(s.daysOverdue) : '—', s: this.td('right', { color: s.daysOverdue > 0 ? 'oklch(0.74 0.13 25)' : undefined }), ts: {}, raw: s.daysOverdue }, this.cellTag(s.payStatus)],
+          go: this.drill('detail', { kind: 'property', id: s.propertyId }),
+        })),
+        totalCols: [3, 4, 5],
+      };
+    } else if (v === 'payables') {
+      out.summary = [['Total payable', this.money(k.payable), 'across all counterparties']].concat(k.payableBreakdown.map((b) => [b[0], this.money(b[1]), M.pctOf(b[1], k.payable).toFixed(0) + '% of payables']));
+      const rowsPay = [];
+      props.filter((p) => p.remaining > 0).forEach((p) => rowsPay.push({ party: p.seller, type: 'Property Seller', ref: p.name, amount: p.remaining, due: M.addDays(p.purchaseDate, 90) }));
+      D.commissions.filter((c) => c.outstanding > 0 && ids.has(c.propertyId) && (f.agent === 'all' || c.agentId === f.agent)).forEach((c) => rowsPay.push({ party: c.agent, type: 'Agent', ref: c.id + ' · ' + c.property, amount: c.outstanding, due: M.addDays(c.date, 30) }));
+      D.salaries.filter((s) => s.status !== 'Paid').forEach((s) => rowsPay.push({ party: s.employee, type: 'Employee', ref: 'Salary ' + s.monthLabel, amount: s.net, due: s.date }));
+      D.bills.filter((b) => b.outstanding > 0).forEach((b) => rowsPay.push({ party: b.vendor, type: 'Utility / Vendor', ref: b.type + ' · ' + b.period, amount: b.outstanding, due: b.dueDate }));
+      D.taxes.filter((t) => t.outstanding > 0).forEach((t) => rowsPay.push({ party: t.authority, type: 'Tax Authority', ref: t.type, amount: t.outstanding, due: t.dueDate }));
+      D.expenses.filter((e) => e.outstanding > 0).forEach((e) => rowsPay.push({ party: e.vendor, type: 'Vendor', ref: e.category, amount: e.outstanding, due: M.addDays(e.date, 30) }));
+      rowsPay.sort((a, b) => b.amount - a.amount);
+      out.table = {
+        title: 'Accounts payable',
+        columns: [['Payee'], ['Type'], ['Reference'], ['Amount', 'right'], ['Due date'], ['Days overdue', 'right']],
+        rows: rowsPay.map((x) => {
+          const od = Math.max(0, Math.round((M.TODAY - x.due) / M.day));
+          return { cells: [this.cellStrong(x.party), this.cellText(x.type), this.cellText(x.ref), this.cellMoney(x.amount, { signed: true, invert: true, weight: 600 }), this.cellDate(x.due), { v: od ? M.fmtNum(od) : '—', s: this.td('right', { color: od > 0 ? 'oklch(0.74 0.13 25)' : undefined }), ts: {}, raw: od }] };
+        }),
+        totalCols: [3],
+      };
+    } else if (v === 'transactions') {
+      const items = D.payments.filter((p) => inR(p.date, r) && (f.office === 'all' || p.office === f.office) && (!M.scopedToProperty(f) || !p.propertyId || ids.has(p.propertyId)));
+      out.summary = [
+        ['Transactions', M.fmtNum(items.length), 'in ' + r.label],
+        ['Cash in', this.money(items.filter((p) => p.dir === 'in').reduce((a, p) => a + p.amount, 0)), 'receipts'],
+        ['Cash out', this.money(items.filter((p) => p.dir === 'out').reduce((a, p) => a + p.amount, 0)), 'payments'],
+      ];
+      out.table = {
+        title: 'Transaction-level ledger',
+        columns: [['Transaction ID'], ['Date'], ['Type'], ['Category'], ['Property'], ['Counterparty'], ['Amount', 'right'], ['Method'], ['Account'], ['Reference'], ['Office'], ['Created by'], ['Approved by'], ['Status']],
+        rows: items.map((p) => ({
+          cells: [this.cellStrong(p.id), this.cellDate(p.date), this.cellText(p.dir === 'in' ? 'Inflow' : 'Outflow'), this.cellText(p.category), this.cellText(p.propertyId || '—'), this.cellText(p.party), this.cellMoney(p.dir === 'in' ? p.amount : -p.amount, { signed: true, weight: 600 }), this.cellText(p.method), this.cellText(p.account), this.cellText(p.ref), this.cellText(p.office), this.cellText(p.createdBy), this.cellText(p.approvedBy), this.cellTag('Paid')],
+          go: p.propertyId ? this.drill('detail', { kind: 'property', id: p.propertyId }) : undefined,
+        })),
+        totalCols: [6],
+      };
+      out.table.rows.forEach((row) => { row.cells[13].v = 'Posted'; });
+    } else if (v === 'audit') {
+      out.summary = [
+        ['Logged actions', M.fmtNum(D.audit.length), 'most recent first'],
+        ['Adjustments', M.fmtNum(D.audit.filter((a) => a.prevAmount !== null).length), 'amount changed after approval'],
+        ['Voided / reversed', M.fmtNum(D.audit.filter((a) => a.action === 'Voided' || a.action === 'Reversed').length), 'records never hard-deleted'],
+      ];
+      out.table = {
+        title: 'Audit trail',
+        columns: [['Log ID'], ['Date / time'], ['Transaction'], ['Action'], ['User'], ['Entity'], ['Previous amount', 'right'], ['New amount', 'right'], ['Note']],
+        rows: D.audit.map((a) => ({
+          cells: [this.cellText(a.id), this.cellDate(a.date), this.cellText(a.txnId), this.cellTag(a.action === 'Approved' ? 'Paid' : a.action === 'Voided' || a.action === 'Reversed' ? 'Overdue' : 'Pending'), this.cellText(a.user), this.cellText(a.entity), a.prevAmount === null ? this.cellText('—') : this.cellMoney(a.prevAmount), this.cellMoney(a.newAmount), this.cellText(a.note)],
+        })),
+      };
+      out.table.rows.forEach((row, i) => { row.cells[3].v = D.audit[i].action; });
+      out.note = 'Financial records are never deleted. Corrections are posted as Void, Cancel, Reverse or Adjustment entries so the full financial history is preserved.';
+    } else if (v === 'permissions') {
+      const areas = ['Properties', 'Purchases', 'Sales', 'Profit reports', 'Expenses', 'Salaries', 'Commissions', 'Tax', 'Zakat', 'Cash flow', 'Financial reports', 'Audit trail'];
+      const matrix = {
+        CEO: areas.reduce((a, x) => ((a[x] = 'Full'), a), {}),
+        Accountant: { Properties: 'Read', Purchases: 'Full', Sales: 'Full', 'Profit reports': 'Read', Expenses: 'Full', Salaries: 'Restricted', Commissions: 'Read', Tax: 'Full', Zakat: 'Full', 'Cash flow': 'Read', 'Financial reports': 'Full', 'Audit trail': 'Read' },
+        Manager: { Properties: 'Full', Purchases: 'Read', Sales: 'Full', 'Profit reports': 'Operational', Expenses: 'Read', Salaries: 'None', Commissions: 'Full', Tax: 'None', Zakat: 'None', 'Cash flow': 'None', 'Financial reports': 'None', 'Audit trail': 'None' },
+        Agent: { Properties: 'Assigned only', Purchases: 'None', Sales: 'Own only', 'Profit reports': 'None', Expenses: 'None', Salaries: 'None', Commissions: 'Own only', Tax: 'None', Zakat: 'None', 'Cash flow': 'None', 'Financial reports': 'None', 'Audit trail': 'None' },
+      };
+      out.summary = Object.keys(matrix).map((rr) => [rr, rr === this.state.role ? 'Active' : '—', M.ROLES[rr].deny.length ? M.ROLES[rr].deny.length + ' sections hidden' : 'Unrestricted']);
+      out.table = {
+        title: 'Report permissions matrix',
+        columns: [['Report area'], ['CEO'], ['Accountant'], ['Manager'], ['Agent']],
+        rows: areas.map((x) => ({ cells: [this.cellStrong(x), this.cellTag(matrix.CEO[x] === 'Full' ? 'Paid' : matrix.CEO[x]), this.cellTag(matrix.Accountant[x]), this.cellTag(matrix.Manager[x]), this.cellTag(matrix.Agent[x])] })),
+      };
+      out.table.rows.forEach((row, i) => {
+        ['CEO', 'Accountant', 'Manager', 'Agent'].forEach((rr, j) => { row.cells[j + 1].v = matrix[rr][areas[i]]; });
+      });
+    } else if (v === 'detail' && ctx) {
+      if (ctx.kind === 'property') {
+        const p = D.properties.find((x) => x.id === ctx.id);
+        const s = D.sales.find((x) => x.propertyId === ctx.id);
+        out.fields = [
+          ['Property ID', p.id], ['Property', p.name], ['Type', p.type], ['Project / society', p.project],
+          ['Location', p.location], ['Block', p.block], ['Plot / unit', p.unit], ['Size', p.size],
+          ['Seller / vendor', p.seller], ['Purchase date', M.fmtDate(p.purchaseDate)],
+          ['Purchase price', this.money(p.price)], ['Registration / transfer', this.money(p.extras.registration)],
+          ['Legal costs', this.money(p.extras.legal)], ['Development charges', this.money(p.extras.development)],
+          ['Other purchase expenses', this.money(p.extras.other)], ['Total purchase cost', this.money(p.totalCost)],
+          ['Amount paid', this.money(p.paid)], ['Amount remaining', this.money(p.remaining)],
+          ['Payment status', p.payStatus], ['Current status', p.status],
+          ['Current market value', this.money(p.currentValue)], ['Potential profit', this.money(p.currentValue - p.totalCost)],
+          ['Held', p.heldDays + ' days'], ['Office / branch', p.office],
+        ];
+        if (s) {
+          out.summary = [
+            ['Total property cost', this.money(p.totalCost), 'price + acquisition costs'],
+            ['Selling price', this.money(s.sellingPrice), M.fmtDate(s.date)],
+            ['Gross property profit', this.money(s.grossProfit), M.pctOf(s.grossProfit, p.totalCost).toFixed(1) + '% on cost'],
+            ['Net property profit', this.money(s.netProfit), 'after commission, tax, selling costs'],
+          ];
+        } else {
+          out.summary = [
+            ['Total property cost', this.money(p.totalCost), 'invested to date'],
+            ['Current market value', this.money(p.currentValue), 'estimated'],
+            ['Potential profit', this.money(p.currentValue - p.totalCost), M.pctOf(p.currentValue - p.totalCost, p.totalCost).toFixed(1) + '% upside'],
+            ['Still payable', this.money(p.remaining), 'to ' + p.seller],
+          ];
+        }
+        const led = D.payments.filter((x) => x.propertyId === p.id);
+        out.table = {
+          title: 'Transactions behind this property',
+          columns: [['Transaction ID'], ['Date'], ['Type'], ['Category'], ['Counterparty'], ['Amount', 'right'], ['Method'], ['Account'], ['Created by'], ['Approved by']],
+          rows: led.map((x) => ({ cells: [this.cellStrong(x.id), this.cellDate(x.date), this.cellText(x.dir === 'in' ? 'Inflow' : 'Outflow'), this.cellText(x.category), this.cellText(x.party), this.cellMoney(x.dir === 'in' ? x.amount : -x.amount, { signed: true }), this.cellText(x.method), this.cellText(x.account), this.cellText(x.createdBy), this.cellText(x.approvedBy)] })),
+          totalCols: [5],
+        };
+      } else {
+        const a = D.agents.find((x) => x.id === ctx.id);
+        const comms = D.commissions.filter((c) => c.agentId === a.id);
+        const sales = D.sales.filter((s) => s.agentId === a.id);
+        out.fields = [
+          ['Agent', a.name], ['Agent ID', a.id], ['Office / branch', a.office], ['Joined', a.joined],
+          ['Commission rate', a.rate.toFixed(2) + '%'], ['Total transactions', M.fmtNum(sales.length)],
+          ['Total sales', this.money(sales.reduce((x, s) => x + s.sellingPrice, 0))],
+          ['Commission earned', this.money(comms.reduce((x, c) => x + c.amount, 0))],
+          ['Commission paid', this.money(comms.reduce((x, c) => x + c.paid, 0))],
+          ['Commission outstanding', this.money(comms.reduce((x, c) => x + c.outstanding, 0))],
+        ];
+        out.summary = [
+          ['Sales value', this.money(sales.reduce((x, s) => x + s.sellingPrice, 0)), M.fmtNum(sales.length) + ' transactions'],
+          ['Profit generated', this.money(sales.reduce((x, s) => x + s.grossProfit, 0)), 'gross, company side'],
+          ['Commission earned', this.money(comms.reduce((x, c) => x + c.amount, 0)), 'at ' + a.rate.toFixed(2) + '%'],
+          ['Commission outstanding', this.money(comms.reduce((x, c) => x + c.outstanding, 0)), 'payable to agent'],
+        ];
+        out.table = {
+          title: 'Commission transactions — ' + a.name,
+          columns: [['Commission ID'], ['Property'], ['Buyer'], ['Date'], ['Sale value', 'right'], ['Rate', 'right'], ['Commission', 'right'], ['Paid', 'right'], ['Outstanding', 'right'], ['Status']],
+          rows: comms.map((c) => {
+            const s = D.sales.find((x) => x.propertyId === c.propertyId) || { sellingPrice: 0 };
+            return { cells: [this.cellStrong(c.id), this.cellText(c.property), this.cellText(c.counterparty), this.cellDate(c.date), this.cellMoney(s.sellingPrice), { v: c.pct.toFixed(2) + '%', s: this.td('right'), ts: {}, raw: c.pct }, this.cellMoney(c.amount, { weight: 600 }), this.cellMoney(c.paid), this.cellMoney(c.outstanding, { signed: true, invert: true }), this.cellTag(c.status)], go: this.drill('detail', { kind: 'property', id: c.propertyId }) };
+          }),
+          totalCols: [4, 6, 7, 8],
+        };
+      }
+    }
+    return out;
+  }
+
+  finishTable(t) {
+    if (!t) return null;
+    const q = this.state.query.trim().toLowerCase();
+    let rows = t.rows;
+    if (q) rows = rows.filter((r) => r.cells.some((c) => String(c.v).toLowerCase().indexOf(q) >= 0));
+    const sort = this.state.sort;
+    if (sort) {
+      rows = rows.slice().sort((a, b) => {
+        const x = a.cells[sort.i] ? a.cells[sort.i].raw : 0, y = b.cells[sort.i] ? b.cells[sort.i].raw : 0;
+        if (typeof x === 'number' && typeof y === 'number') return (x - y) * sort.dir;
+        return String(x).localeCompare(String(y)) * sort.dir;
+      });
+    }
+    const columns = t.columns.map((c, i) => ({
+      label: c[0] + (sort && sort.i === i ? (sort.dir === 1 ? '  ↑' : '  ↓') : ''),
+      s: {
+        padding: '11px 14px', textAlign: c[1] || 'left', fontSize: '11px', textTransform: 'uppercase',
+        letterSpacing: '0.07em', color: sort && sort.i === i ? 'oklch(0.92 0.006 255)' : 'oklch(0.64 0.012 255)',
+        fontFamily: this.MONO, fontWeight: 500, borderBottom: '1px solid oklch(0.30 0.008 255)',
+        background: 'oklch(0.215 0.008 255)', cursor: 'pointer', whiteSpace: 'nowrap', position: 'sticky', top: 0,
+      },
+      sort: () => this.setState({ sort: sort && sort.i === i ? { i, dir: sort.dir * -1 } : { i, dir: -1 } }),
+    }));
+    const totals = t.totalCols ? t.columns.map((c, i) => {
+      const isT = t.totalCols.indexOf(i) >= 0;
+      const val = isT ? rows.reduce((a, r) => a + (typeof (r.cells[i] || {}).raw === 'number' ? r.cells[i].raw : 0), 0) : null;
+      return {
+        v: i === 0 ? 'Total · ' + rows.length + ' records' : isT ? this.money(val) : '',
+        s: { padding: '12px 14px', textAlign: c[1] || 'left', fontFamily: c[1] === 'right' ? this.MONO : undefined, fontWeight: 700, fontSize: '13px', background: 'oklch(0.235 0.008 255)', borderTop: '1px solid oklch(0.32 0.008 255)', whiteSpace: 'nowrap', color: isT ? this.tone(val) : 'oklch(0.86 0.008 255)' },
+        ts: {},
+      };
+    }) : null;
+    const finished = rows.map((r) => ({
+      cells: r.cells, go: r.go,
+      s: { cursor: r.go ? 'pointer' : 'default', transition: 'background .12s' },
+    }));
+    this._exp = { columns: t.columns.map((c) => c[0]), rows: rows.map((r) => r.cells.map((c) => c.v)), title: t.title };
+    return { ...t, columns, rows: finished, totals };
+  }
+
+  /* ---------------- exports ---------------- */
+  download(name, mime, text) {
+    const blob = new Blob([text], { type: mime });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = name; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+  }
+  header() {
+    const r = this.M.rangeFor(this.state.rangeKey, this.state.custom);
+    return [[this.M.COMPANY], [this.titleOf(this.state.view)], ['Period', r.label], ['Generated', this.M.fmtDate(this.M.TODAY)], []];
+  }
+  exportCsv = () => {
+    if (!this._exp) return;
+    const M = this.M;
+    this.download(this.state.view + '-' + this.state.rangeKey + '.csv', 'text/csv;charset=utf-8',
+      M.csv([''], this.header()).replace(/^,\r\n/, '') + '\r\n' + M.csv(this._exp.columns, this._exp.rows));
+  };
+  exportXls = () => {
+    if (!this._exp) return;
+    const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    const h = this.header().map((r) => '<tr><td colspan="2"><b>' + esc(r.join(': ')) + '</b></td></tr>').join('');
+    const th = '<tr>' + this._exp.columns.map((c) => '<th>' + esc(c) + '</th>').join('') + '</tr>';
+    const tr = this._exp.rows.map((r) => '<tr>' + r.map((c) => '<td>' + esc(c) + '</td>').join('') + '</tr>').join('');
+    this.download(this.state.view + '-' + this.state.rangeKey + '.xls', 'application/vnd.ms-excel',
+      '<html><head><meta charset="utf-8" /></head><body><table>' + h + th + tr + '</table></body></html>');
+  };
+  printReport = () => window.print();
+
+  /* ---------------- render values ---------------- */
+  renderVals() {
+    if (!this.state.ready || !this.M) {
+      return {
+        loading: true, skeletons: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        pageTitle: 'CEO Dashboard', pageSubtitle: 'Loading financial records…',
+        companyName: 'Meridian Estates (Pvt) Ltd', generatedAt: '—', rangeLabel: '—',
+        numbersLabel: 'PKR compact', role: 'CEO', query: '', resultNote: 'Preparing ledger…',
+        rangeChips: [], navGroups: [], crumbs: [], filterControls: [], roleOptions: [],
+        denied: false, isDashboard: false, isAlerts: false, customOpen: false,
+        hasFields: false, hasSummary: false, hasTabs: false, hasTrend: false,
+        hasTable: false, hasTotals: false, hasNote: false, noRows: false,
+        showSalesChart: false, showProfitChart: false, showExpenseChart: false,
+      };
+    }
+    const M = this.M, st = this.state, k = this.kpi(), r = k.range;
+    const denied = M.ROLES[st.role].deny.indexOf(st.view) >= 0;
+    const built = denied ? { summary: [], fields: [], table: null, note: '', tabs: null, trend: null } : this.build();
+    const table = denied ? null : this.finishTable(built.table);
+    if (denied) this._exp = null;
+
+    const chip = (active) => ({
+      padding: '6px 11px', borderRadius: '8px', fontSize: '12px', fontWeight: active ? 600 : 400,
+      background: active ? 'var(--acc, oklch(0.80 0.11 165))' : 'oklch(0.225 0.008 255)',
+      color: active ? 'oklch(0.18 0.02 165)' : 'oklch(0.78 0.01 255)', whiteSpace: 'nowrap',
+      border: '1px solid ' + (active ? 'transparent' : 'oklch(0.30 0.01 255)'),
+    });
+
+    const rangeChips = M.RANGE_KEYS.map(([key, label]) => ({
+      label, s: chip(st.rangeKey === key),
+      go: () => (key === 'custom' ? this.setState({ rangeKey: 'custom' }) : this.setState({ rangeKey: key, customError: null })),
+    }));
+
+    const navGroups = this.NAV.map((g) => ({
+      label: g[0],
+      items: g[1].filter((it) => true).map(([view, label]) => {
+        const active = st.view === view;
+        const locked = M.ROLES[st.role].deny.indexOf(view) >= 0;
+        let badge = '';
+        if (view === 'alerts') badge = String(M.alerts().length);
+        if (view === 'bills' && k.billsOverdueCount) badge = String(k.billsOverdueCount);
+        if (locked) badge = 'lock';
+        return {
+          label, go: () => this.go(view),
+          s: {
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px',
+            padding: '8px 10px', borderRadius: '8px', fontSize: '13px', textAlign: 'left', width: '100%',
+            background: active ? 'oklch(0.26 0.012 255)' : 'transparent',
+            color: locked ? 'oklch(0.52 0.01 255)' : active ? 'oklch(0.98 0.004 255)' : 'oklch(0.80 0.01 255)',
+            fontWeight: active ? 600 : 400,
+            boxShadow: active ? 'inset 2px 0 0 var(--acc, oklch(0.80 0.11 165))' : 'none',
+          },
+          badge: badge === 'lock' ? '⌧' : badge,
+          badgeStyle: {
+            fontSize: '10.5px', fontFamily: this.MONO, padding: badge && badge !== 'lock' ? '1px 6px' : 0,
+            borderRadius: '999px', background: badge && badge !== 'lock' ? 'oklch(0.30 0.05 25)' : 'transparent',
+            color: badge === 'lock' ? 'oklch(0.55 0.01 255)' : 'oklch(0.86 0.09 25)',
+          },
+        };
+      }),
+    }));
+
+    const filterOpts = [
+      ['project', 'All projects', M.PROJECTS.map((p) => [p.id, p.name])],
+      ['agent', 'All agents', M.DATA.agents.map((a) => [a.id, a.name])],
+      ['type', 'All property types', M.TYPES.map((t) => [t, t])],
+      ['status', 'All statuses', M.STATUSES.map((s) => [s, s])],
+      ['payStatus', 'All payment statuses', M.PAY_STATUS.map((s) => [s, s])],
+      ['office', 'All offices', M.OFFICES.map((o) => [o, o])],
+    ];
+    const filterControls = filterOpts.map(([key, allLabel, opts]) => ({
+      value: this.f[key],
+      options: [{ value: 'all', label: allLabel }].concat(opts.map(([value, label]) => ({ value, label }))),
+      onChange: (e) => this.setState({ filters: { ...this.f, [key]: e.target.value } }),
+    }));
+
+    const activeFilters = Object.keys(M.EMPTY_FILTERS).filter((key) => this.f[key] !== 'all').length;
+
+    /* dashboard pieces */
+    const cardStyleValue = (v, signed) => ({ fontSize: '21px', fontWeight: 600, letterSpacing: '-0.02em', fontFamily: this.MONO, color: signed ? this.tone(v) : 'oklch(0.97 0.004 255)' });
+    const subStyle = { fontSize: '11.5px', color: 'oklch(0.64 0.012 255)' };
+    const can = (view) => M.ROLES[st.role].deny.indexOf(view) < 0;
+    const card = (label, value, sub, view, ctx, signedVal) => {
+      if (!can(view)) return {
+        label, value: 'Restricted', sub: 'Not available to the ' + st.role + ' role',
+        vs: { fontSize: '17px', fontWeight: 600, fontFamily: this.MONO, color: 'oklch(0.56 0.012 255)' },
+        ss: subStyle, go: () => this.go('permissions'),
+      };
+      return {
+        label, value: typeof value === 'number' ? this.money(value) : value, sub,
+        vs: cardStyleValue(signedVal === undefined ? 0 : signedVal, signedVal !== undefined), ss: subStyle,
+        go: this.drill(view, ctx),
+      };
+    };
+
+    const kpiRows = [
+      { s: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: '12px' }, cards: [
+        card('Property portfolio value', k.portfolioValue, k.counts.unsold + ' unsold · cost ' + this.money(k.portfolioCost), 'inventory'),
+        card('Total purchase cost', k.purchaseCost, k.counts.purchasedInRange + ' properties acquired', 'purchases'),
+        card('Total sales', k.salesRevenue, k.counts.soldInRange + ' properties sold', 'sales'),
+        card('Gross profit', k.grossProfit, k.grossMargin.toFixed(1) + '% gross margin' + (k.scoped ? ' · vs cost of properties sold in scope' : ''), 'pnl', null, k.grossProfit),
+        card(k.scoped ? 'Scope contribution' : 'Net profit', k.netProfit, k.scoped ? 'after commission & direct sale costs' : k.netMargin.toFixed(1) + '% net margin', 'pnl', null, k.netProfit),
+      ] },
+      { s: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(185px,1fr))', gap: '12px' }, cards: [
+        card('Agent commission', k.commission, this.money(k.commissionOut) + ' outstanding', 'commissions'),
+        card('Employee salaries', k.salaries, this.money(k.salariesPaid) + ' paid', 'salaries'),
+        card('Office expenses', k.officeExp, 'marketing ' + this.money(k.marketing), 'expenses'),
+        card('Tax paid', k.taxPaid, this.money(k.taxOut) + ' outstanding', 'tax'),
+        card('Zakat paid', k.zakat, this.money(k.zakatRemaining) + ' remaining', 'zakat'),
+      ] },
+      { s: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(185px,1fr))', gap: '12px' }, cards: [
+        card('Cash in', k.cashIn, 'sales, receipts, other income', 'cashflow'),
+        card('Cash out', k.cashOut, 'purchases, expenses, obligations', 'cashflow'),
+        card('Net cash flow', k.netCash, k.netCash >= 0 ? 'positive position' : 'net outflow', 'cashflow', null, k.netCash),
+        card('Customer receivables', k.receivable, 'expected from buyers', 'receivables'),
+        card('Company payables', k.payable, 'owed to all counterparties', 'payables'),
+      ] },
+    ];
+
+    const cnt = k.counts, tot = Math.max(1, cnt.total);
+    const barColors = ['oklch(0.82 0.11 165)', 'oklch(0.84 0.12 78)', 'oklch(0.76 0.06 300)', 'oklch(0.62 0.05 255)'];
+    const pf = [['Available', cnt.available], ['Reserved', cnt.reserved], ['Under process', cnt.underProcess], ['Sold', cnt.sold]];
+    const portfolioBars = pf.map((x, i) => ({ s: { width: (x[1] / tot) * 100 + '%', background: barColors[i] }, title: x[0] + ': ' + x[1] }));
+    const portfolioLegend = pf.map((x, i) => ({ label: x[0], value: M.fmtNum(x[1]), dot: { width: '9px', height: '9px', borderRadius: '3px', background: barColors[i], display: 'inline-block' } }));
+
+    const series = this.months();
+    const maxBar = Math.max(1, ...series.map((s) => Math.max(s.k.purchaseCost, s.k.salesRevenue)));
+    const mkCols = (ss, maxv) => ss.map((s) => {
+      const bar = (val, color) => ({ width: '33%', height: Math.max(1, (Math.abs(val) / maxv) * 100) + '%', background: color, borderRadius: '3px 3px 0 0', minHeight: '2px' });
+      return {
+        label: s.label,
+        p: bar(s.k.purchaseCost, 'oklch(0.55 0.05 255)'), pt: 'Purchase ' + this.money(s.k.purchaseCost),
+        sl: bar(s.k.salesRevenue, 'oklch(0.72 0.09 220)'), st: 'Sales ' + this.money(s.k.salesRevenue),
+        g: bar(s.k.grossProfit, 'var(--acc, oklch(0.80 0.11 165))'), gt: 'Gross profit ' + this.money(s.k.grossProfit),
+        go: this.drill('profit', null),
+      };
+    });
+    const barCols = mkCols(series, maxBar);
+    const barLegend = [['Purchase cost', 'oklch(0.55 0.05 255)'], ['Sales revenue', 'oklch(0.72 0.09 220)'], ['Gross profit', 'var(--acc, oklch(0.80 0.11 165))']]
+      .map((x) => ({ label: x[0], dot: { width: '9px', height: '9px', borderRadius: '3px', background: x[1], display: 'inline-block' } }));
+
+    const W = 620, H = 200;
+    const nets = series.map((s) => s.k.netProfit), revs = series.map((s) => s.k.salesRevenue);
+    const lo = Math.min(0, ...nets), hi = Math.max(1, ...nets, ...revs);
+    const px = (i) => (series.length === 1 ? W / 2 : (i / (series.length - 1)) * W);
+    const py = (v) => H - ((v - lo) / (hi - lo || 1)) * H;
+    const linePoints = nets.map((v, i) => px(i).toFixed(1) + ',' + py(v).toFixed(1)).join(' ');
+    const revPoints = revs.map((v, i) => px(i).toFixed(1) + ',' + py(v).toFixed(1)).join(' ');
+    const lineDots = nets.map((v, i) => ({ x: px(i).toFixed(1), y: py(v).toFixed(1), title: series[i].full + ' — net ' + this.money(v) }));
+    const lineGrid = [0, 0.25, 0.5, 0.75, 1].map((t) => ({ y: (t * H).toFixed(0) }));
+    const lineLabels = series.map((s) => s.label);
+
+    const brk = M.expenseBreakdown(k), brkTotal = brk.reduce((a, x) => a + x[1], 0) || 1;
+    const C = 2 * Math.PI * 52;
+    let acc = 0;
+    const donutViews = { 'Employee Salaries': 'salaries', 'Office Expenses': 'expenses', 'Agent Commission': 'commissions', Marketing: 'expenses', Bills: 'bills', 'Property Expenses': 'expenses', Tax: 'tax', Zakat: 'zakat', Other: 'expenses' };
+    const donut = brk.map((x) => {
+      const frac = x[1] / brkTotal, len = frac * C;
+      const seg = {
+        color: 'oklch(0.75 0.09 ' + x[2] + ')', dash: len.toFixed(2) + ' ' + (C - len).toFixed(2), offset: (-acc).toFixed(2),
+        label: x[0], amount: this.money(x[1]), pct: (frac * 100).toFixed(1) + '%', title: x[0] + ' — ' + this.money(x[1]) + ' (' + (frac * 100).toFixed(1) + '%)',
+        dot: { width: '9px', height: '9px', borderRadius: '3px', background: 'oklch(0.75 0.09 ' + x[2] + ')', display: 'inline-block', flex: '0 0 9px' },
+        go: this.drill(donutViews[x[0]] || 'expenses', null),
+      };
+      acc += len;
+      return seg;
+    });
+
+    const D = M.DATA;
+    const money = (n) => this.money(n);
+    const item = (a, b, c, view, ctx, signed) => ({ a, b: typeof b === 'number' ? money(b) : b, c, s: { fontFamily: this.MONO, fontSize: '13px', fontWeight: 600, whiteSpace: 'nowrap', color: signed === undefined ? 'oklch(0.94 0.006 255)' : this.tone(signed, true) }, go: this.drill(view, ctx) });
+
+    const ef = this.effFilters();
+    const scopeIds = new Set(D.properties.filter((p) => M.propMatch(p, ef)).map((p) => p.id));
+    const invTop = D.properties.filter((p) => p.status !== 'Sold' && scopeIds.has(p.id)).sort((a, b) => (b.currentValue - b.totalCost) - (a.currentValue - a.totalCost)).slice(0, 5);
+    const topA = M.agentSummary(r, this.effFilters()).slice(0, 5);
+    const recent = D.payments.filter((p) => (ef.office === 'all' || p.office === ef.office) && (!M.scopedToProperty(ef) || !p.propertyId || scopeIds.has(p.propertyId))).slice(0, 5);
+    const upcoming = [].concat(
+      D.bills.filter((b) => b.status === 'Pending').map((b) => ({ a: b.type + ' · ' + b.vendor, b: b.outstanding || b.amount, c: 'Due ' + M.fmtDate(b.dueDate), v: 'bills' })),
+      D.taxes.filter((t) => !t.paid).map((t) => ({ a: t.type, b: t.outstanding, c: 'Due ' + M.fmtDate(t.dueDate), v: 'tax' })),
+      (can('salaries') ? D.salaries.filter((s) => s.status === 'Pending').slice(0, 2).map((s) => ({ a: 'Payroll · ' + s.monthLabel, b: s.net, c: 'Due ' + M.fmtDate(s.date), v: 'salaries' })) : [])
+    ).sort((a, b) => b.b - a.b).slice(0, 5);
+    const overdueBills = D.bills.filter((b) => b.status === 'Overdue').slice(0, 5);
+    const outComm = D.commissions.filter((c) => c.outstanding > 0 && scopeIds.has(c.propertyId) && (ef.agent === 'all' || c.agentId === ef.agent)).sort((a, b) => b.outstanding - a.outstanding).slice(0, 5);
+    const recv = M.receivables(this.effFilters()).slice(0, 5);
+
+    const panels = [
+      { view: 'inventory', title: 'Property inventory · highest upside', cta: 'Inventory →', go: this.drill('inventory', null), items: invTop.map((p) => item(p.name, p.currentValue - p.totalCost, p.project + ' · cost ' + money(p.totalCost), 'detail', { kind: 'property', id: p.id })) },
+      { view: 'agents', title: 'Top agents', cta: 'All agents →', go: this.drill('agents', null), items: topA.map((a) => item(a.name, a.salesValue, a.transactions + ' transactions · commission ' + money(a.commission), 'detail', { kind: 'agent', id: a.id })) },
+      { view: 'transactions', title: 'Recent transactions', cta: 'Ledger →', go: this.drill('transactions', null), items: recent.map((p) => item(p.category, p.dir === 'in' ? p.amount : -p.amount, M.fmtDate(p.date) + ' · ' + p.party, 'transactions', null, p.dir === 'in' ? -1 : 1)) },
+      { view: 'payables', title: 'Upcoming payments', cta: 'Payables →', go: this.drill('payables', null), items: upcoming.map((u) => item(u.a, u.b, u.c, u.v, null, 1)) },
+      { view: 'bills', title: 'Overdue bills', cta: 'Bills →', go: this.drill('bills', null), items: overdueBills.map((b) => item(b.type + ' · ' + b.vendor, b.outstanding, 'Due ' + M.fmtDate(b.dueDate) + ' · ' + b.number, 'bills', null, 1)) },
+      { view: 'commissions', title: 'Outstanding commissions', cta: 'Commissions →', go: this.drill('commissions', null), items: outComm.map((c) => item(c.agent, c.outstanding, c.property + ' · ' + c.status, 'detail', { kind: 'agent', id: c.agentId }, 1)) },
+      { view: 'receivables', title: 'Customer receivables', cta: 'Receivables →', go: this.drill('receivables', null), items: recv.map((s) => item(s.buyer, s.outstanding, s.daysOverdue ? s.daysOverdue + ' days overdue' : 'Due ' + M.fmtDate(s.dueDate), 'receivables', null, 1)) },
+    ].filter((p) => can(p.view)).map((p) => ({ ...p, empty: p.items.length === 0 }));
+
+    const sevMap = { high: ['oklch(0.78 0.13 25)', 'oklch(0.26 0.06 25)'], med: ['oklch(0.84 0.12 78)', 'oklch(0.27 0.05 78)'], low: ['oklch(0.74 0.05 255)', 'oklch(0.25 0.02 255)'], good: ['oklch(0.82 0.11 165)', 'oklch(0.25 0.05 165)'] };
+    const alertList = M.alerts().map((a) => ({
+      sev: { high: 'Critical', med: 'Attention', low: 'Watch', good: 'Opportunity' }[a.sev],
+      title: a.title, detail: a.detail, go: this.drill(a.view, null),
+      s: { display: 'flex', alignItems: 'center', gap: '14px', width: '100%', padding: '14px 16px', borderRadius: '12px', border: '1px solid oklch(0.28 0.008 255)', background: 'oklch(0.195 0.007 255)', textAlign: 'left' },
+      tag: { flex: '0 0 82px', fontSize: '10.5px', fontFamily: this.MONO, textTransform: 'uppercase', letterSpacing: '0.07em', padding: '4px 8px', borderRadius: '6px', textAlign: 'center', background: sevMap[a.sev][1], color: sevMap[a.sev][0], fontWeight: 600 },
+    }));
+
+    const crumbs = [{ label: 'CEO Dashboard', go: () => this.go('dashboard'), s: { fontSize: '11.5px', fontFamily: this.MONO, color: 'oklch(0.66 0.012 255)' } }]
+      .concat(st.view === 'dashboard' ? [] : (st.stack.filter((s) => s.view !== 'dashboard').concat([{ view: st.view, label: this.titleOf(st.view) }])).map((s, i, arr) => ({
+        label: '  ›  ' + s.label, go: () => this.go(s.view),
+        s: { fontSize: '11.5px', fontFamily: this.MONO, color: i === arr.length - 1 ? 'var(--acc, oklch(0.80 0.11 165))' : 'oklch(0.66 0.012 255)' },
+      })));
+
+    const detailTitle = st.view === 'detail' && st.ctx
+      ? (st.ctx.kind === 'property' ? (D.properties.find((p) => p.id === st.ctx.id) || {}).name : (D.agents.find((a) => a.id === st.ctx.id) || {}).name)
+      : null;
+
+    const summaryStyled = built.summary.map((s) => ({
+      label: s[0], value: s[1], sub: s[2],
+      s: { fontSize: '18px', fontWeight: 600, fontFamily: this.MONO, letterSpacing: '-0.01em', color: 'oklch(0.97 0.004 255)' },
+    }));
+    const fieldsStyled = built.fields.map((f) => ({ label: f[0], value: f[1], s: { fontSize: '14px', fontWeight: 500, fontFamily: this.MONO } }));
+
+    const trendCols = built.trend ? mkCols(built.trend.series, Math.max(1, ...built.trend.series.map((s) => Math.max(s.k.purchaseCost, s.k.salesRevenue)))) : [];
+
+    return {
+      loading: false, skeletons: [],
+      denied, deniedTitle: denied ? this.titleOf(st.view) + ' is not available to the ' + st.role + ' role' : '',
+      deniedNote: denied ? 'Per the report permissions matrix, the ' + st.role + ' role cannot open this section. Switch role in the header, or open Report permissions to review access levels.' : '',
+      isDashboard: !denied && st.view === 'dashboard',
+      isAlerts: !denied && st.view === 'alerts',
+      hasFields: !denied && fieldsStyled.length > 0, fields: fieldsStyled,
+      hasSummary: !denied && summaryStyled.length > 0, summary: summaryStyled,
+      hasTabs: !denied && !!built.tabs,
+      tabs: (built.tabs || []).map(([key, label]) => ({ label, s: chip(st.period === key), go: () => this.setState({ period: key, sort: null }) })),
+      hasTrend: !denied && !!built.trend, trendTitle: built.trend ? built.trend.title : '', trendCols,
+      hasTable: !denied && !!table, tableTitle: table ? table.title : '',
+      tableNote: table ? table.rows.length + ' records · click a column to sort' + (table.rows.length ? '' : '') : '',
+      columns: table ? table.columns : [], rows: table ? table.rows : [],
+      hasTotals: !!(table && table.totals), totals: table && table.totals ? table.totals : [],
+      noRows: !!(table && table.rows.length === 0),
+      hasNote: !denied && !!built.note, note: built.note,
+      pageTitle: st.view === 'dashboard' ? 'Financial overview — ' + r.label : (detailTitle || this.titleOf(st.view)),
+      pageSubtitle: st.view === 'detail' ? 'Every figure traces back to the transactions below.' : (this.SUBTITLES[st.view] || ''),
+      companyName: M.COMPANY, rangeLabel: r.label, generatedAt: M.fmtDate(M.TODAY),
+      rangeChips, navGroups, crumbs, filterControls,
+      resultNote: activeFilters ? activeFilters + ' filter' + (activeFilters > 1 ? 's' : '') + ' active' + (k.scoped ? ' · overheads shown at company scope' : '') : 'No filters applied',
+      role: st.role, roleOptions: Object.keys(M.ROLES).map((x) => ({ value: x, label: M.ROLES[x].label })),
+      setRole: (e) => this.setState({ role: e.target.value, view: 'dashboard', stack: [], ctx: null }),
+      numbersLabel: st.numbers === 'compact' ? 'PKR compact' : 'PKR full',
+      toggleNumbers: () => this.setState({ numbers: st.numbers === 'compact' ? 'full' : 'compact' }),
+      query: st.query, setQuery: (e) => this.setState({ query: e.target.value }),
+      resetFilters: () => this.setState({ filters: { ...M.EMPTY_FILTERS }, query: '', sort: null }),
+      customOpen: st.rangeKey === 'custom', customStart: st.custom.start, customEnd: st.custom.end,
+      customError: st.customError,
+      setCustomStart: (e) => this.setState({ custom: { ...st.custom, start: e.target.value } }),
+      setCustomEnd: (e) => this.setState({ custom: { ...st.custom, end: e.target.value } }),
+      applyCustom: () => {
+        const err = M.validateCustom(st.custom);
+        this.setState({ customError: err, rangeKey: 'custom' });
+      },
+      exportCsv: this.exportCsv, exportXls: this.exportXls, printReport: this.printReport,
+      kpiRows, portfolioBars, portfolioLegend,
+      portfolioNote: cnt.total + ' properties · cost ' + this.money(k.portfolioCost) + ' · market value ' + this.money(k.portfolioValue) + ' · potential profit ' + this.money(k.potentialProfit),
+      barCols, barLegend, linePoints, revPoints, lineDots, lineGrid, lineLabels,
+      donut, panels, alertList,
+      showSalesChart: can('sales') && can('purchases'), showProfitChart: can('profit'),
+      showExpenseChart: can('expenses'),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

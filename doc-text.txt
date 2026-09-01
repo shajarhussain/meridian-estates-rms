@@ -1,0 +1,997 @@
+
+
+Real Estate Management System
+Reporting Module & CEO Dashboard — Detailed Requirements Document
+1. Purpose
+The Reporting Module and CEO Dashboard should provide management with a complete financial and operational overview of the real estate business.
+The CEO should be able to see, in one place:
+Total property purchases
+Total purchasing cost
+Total property sales
+Total selling revenue
+Property inventory/current value
+Gross profit
+Net profit
+Weekly profit
+Monthly profit
+Yearly profit
+Agent commissions
+Agent-wise commission
+Taxes paid
+Zakat paid
+Office expenses
+Employee salaries
+Utility and office bills
+Other business expenses
+Cash inflow and outflow
+Outstanding payments
+Overall business performance
+The system should allow filtering by:
+Today
+This week
+This month
+This quarter
+This year
+Custom date range
+Property
+Project
+Agent
+Office/branch
+Payment status
+
+2. CEO Dashboard
+The CEO Dashboard is the main management screen.
+It should provide a high-level financial snapshot first, with the ability to drill down into detailed reports.
+2.1 Main KPI Cards
+The dashboard should display the following cards:
+Total Purchase Cost
+Shows the total amount spent purchasing properties during the selected period.
+Example:
+Total Purchase Cost: PKR 125,000,000
+Calculation:
+Sum of all property purchasing costs within the selected period.
+
+Total Selling Revenue
+Shows the total amount received/contracted from property sales.
+Example:
+Total Selling Revenue: PKR 175,000,000
+Calculation:
+Sum of all property selling amounts within the selected period.
+
+Gross Profit
+Gross profit before operating expenses, taxes, commissions, salaries, etc.
+Gross Profit = Total Selling Revenue − Total Purchase Cost
+Example:
+Selling Revenue: PKR 175M
+Purchase Cost: PKR 125M
+Gross Profit:
+PKR 50M
+
+Total Agent Commission
+Shows total commission paid/payable to agents.
+Example:
+Agent Commission: PKR 5,000,000
+
+Total Office Expenses
+Includes normal business operating expenses.
+Examples:
+Office rent
+Electricity
+Internet
+Telephone
+Stationery
+Marketing
+Transportation
+Maintenance
+Office supplies
+Software subscriptions
+Cleaning
+Security
+Other office expenses
+
+Total Employee Salaries
+Shows salaries paid during the selected period.
+Example:
+Employee Salaries: PKR 2,500,000
+
+Total Tax Paid
+Shows taxes paid by the business.
+Example:
+Tax Paid: PKR 3,000,000
+
+Total Zakat Paid
+Shows Zakat paid during the selected period.
+Example:
+Zakat Paid: PKR 1,000,000
+
+Total Other Expenses
+Includes expenses that do not fall into the predefined categories.
+
+Net Profit
+Net profit should be calculated after all applicable business expenses.
+Recommended calculation:
+Net Profit = Gross Profit − Agent Commission − Taxes − Zakat − Salaries − Office Expenses − Bills − Other Expenses
+Example:
+Gross Profit = PKR 50M
+Less:
+Agent Commission = PKR 5M
+Salaries = PKR 2.5M
+Office Expenses = PKR 1.5M
+Tax = PKR 3M
+Zakat = PKR 1M
+Other Expenses = PKR 1M
+Net Profit:
+PKR 36M
+
+3. Profit Tracking
+The system must track profit at multiple time intervals.
+3.1 Weekly Profit
+CEO should be able to see:
+Weekly purchase cost
+Weekly sales
+Weekly gross profit
+Weekly commissions
+Weekly expenses
+Weekly net profit
+Example:
+Week
+Purchase
+Sales
+Gross Profit
+Expenses
+Net Profit
+Week 1
+10M
+15M
+5M
+1M
+4M
+Week 2
+5M
+12M
+7M
+2M
+5M
+
+4. Monthly Profit
+Monthly reporting should show:
+Total properties purchased
+Total purchase cost
+Total properties sold
+Total sales
+Gross profit
+Agent commission
+Salaries
+Office expenses
+Bills
+Tax
+Zakat
+Other expenses
+Net profit
+The CEO should be able to select any month.
+Example:
+September 2026
+Purchase Cost: PKR 20M
+Sales: PKR 32M
+Gross Profit: PKR 12M
+Expenses: PKR 4M
+Net Profit: PKR 8M
+
+5. Yearly Profit
+The yearly report should provide a complete financial overview.
+Example:
+Month
+Purchase Cost
+Sales
+Gross Profit
+Expenses
+Net Profit
+Jan
+20M
+30M
+10M
+3M
+7M
+Feb
+15M
+25M
+10M
+2M
+8M
+Mar
+25M
+40M
+15M
+4M
+11M
+...
+...
+...
+...
+...
+...
+Total
+200M
+320M
+120M
+40M
+80M
+A graph should show the monthly trend.
+
+6. Property Purchase Reporting
+The reporting system must maintain complete purchasing information for every property.
+Required Information
+Property ID
+Property name/title
+Property type
+Project/society
+Location
+Block
+Plot/unit number
+Size
+Seller/vendor
+Purchase date
+Purchase price
+Additional purchasing costs
+Registration/transfer costs
+Legal costs
+Development charges
+Other purchase expenses
+Total purchase cost
+Payment status
+Amount paid
+Amount remaining
+Current property status
+Total Purchase Cost
+The system should calculate:
+Purchase Price + Purchase-Related Expenses = Total Property Cost
+Example:
+Purchase Price = PKR 10M
+Transfer Charges = PKR 200K
+Legal Charges = PKR 50K
+Total Cost:
+PKR 10.25M
+
+7. Property Selling Reporting
+Every sale should contain:
+Property ID
+Buyer
+Agent
+Sale date
+Selling price
+Amount received
+Amount outstanding
+Payment method
+Agent commission
+Tax
+Other selling expenses
+Net sale revenue
+Sale status
+Property Profit
+For each property:
+Property Profit = Selling Price − Total Property Cost
+Example:
+Purchase Cost = PKR 10.25M
+Selling Price = PKR 14M
+Gross Property Profit:
+PKR 3.75M
+
+8. Property Total Value
+The CEO should be able to see the total current value of all unsold properties.
+Dashboard card:
+Current Property Inventory Value
+Example:
+Total unsold properties: 25
+Current estimated value:
+PKR 250,000,000
+The report should distinguish between:
+Cost Value
+Amount originally invested in the properties.
+Current Market Value
+Current estimated market value.
+Potential Profit
+Current Market Value − Property Cost
+Example:
+Property Cost = PKR 200M
+Current Market Value = PKR 250M
+Potential Profit:
+PKR 50M
+
+9. Property Inventory Report
+The CEO should see all currently owned/unsold properties.
+Columns:
+Property
+Location
+Purchase Cost
+Current Value
+Potential Profit
+Status
+Property A
+DHA
+10M
+13M
+3M
+Available
+Property B
+Bahria
+15M
+18M
+3M
+Available
+Filters:
+Project
+Location
+Property type
+Agent
+Purchase date
+Property status
+Value range
+
+10. Agent Commission Reporting
+Agent commission needs its own reporting section.
+Commission Information
+For every transaction:
+Agent name
+Agent ID
+Property
+Buyer/seller
+Transaction type
+Sale/purchase
+Transaction date
+Commission percentage
+Commission amount
+Paid amount
+Remaining commission
+Payment date
+Payment status
+
+11. Agent-Wise Commission
+CEO should be able to select an agent and see:
+Agent: Ahmed Khan
+Total Transactions: 15
+Total Sales: PKR 100M
+Commission Earned: PKR 3M
+Commission Paid: PKR 2.5M
+Commission Outstanding: PKR 500K
+Report:
+Agent
+Transactions
+Sales
+Commission
+Paid
+Outstanding
+Agent A
+15
+100M
+3M
+2.5M
+500K
+Agent B
+10
+75M
+2M
+2M
+0
+
+12. Total Agent Commission Report
+CEO should also see total commission for the entire company.
+Example:
+Total Commission
+PKR 10,000,000
+Breakdown:
+Paid: PKR 8,000,000
+Outstanding: PKR 2,000,000
+
+13. Expense Management
+All company expenses should be recorded and categorized.
+Expense Categories
+Office Expenses
+Office rent
+Electricity
+Gas
+Water
+Internet
+Telephone
+Cleaning
+Security
+Stationery
+Furniture
+Repairs
+Maintenance
+Office supplies
+Employee Expenses
+Salaries
+Bonuses
+Allowances
+Overtime
+Travel
+Other employee-related expenses
+Marketing Expenses
+Facebook/Instagram advertising
+Google advertising
+Property portals
+Printing
+Billboards
+Promotional material
+Events
+Property Expenses
+Property maintenance
+Property taxes
+Transfer charges
+Legal fees
+Documentation
+Development charges
+Renovation
+Other Expenses
+Allow the administrator to create additional expense categories.
+
+14. Employee Salary Reporting
+CEO dashboard should show employee salary expenses.
+Information:
+Employee name
+Department
+Salary
+Bonus
+Allowance
+Deduction
+Net salary
+Payment date
+Payment status
+Monthly report:
+Employee
+Basic Salary
+Bonus
+Allowance
+Deduction
+Net Paid
+Employee A
+100K
+10K
+5K
+0
+115K
+Employee B
+150K
+0
+10K
+5K
+155K
+Dashboard:
+Total Monthly Salaries: PKR 2,500,000
+
+15. Bills Management
+The system should track recurring and one-time bills.
+Examples:
+Electricity
+Gas
+Water
+Internet
+Telephone
+Office rent
+Software
+Hosting
+Security
+Maintenance
+Each bill should have:
+Bill type
+Vendor
+Bill number
+Billing period
+Due date
+Amount
+Paid amount
+Outstanding amount
+Payment date
+Status
+Attachment/invoice
+Statuses:
+Pending
+Partially Paid
+Paid
+Overdue
+CEO should have an alert for overdue bills.
+
+16. Tax Reporting
+The system should maintain all taxes paid.
+Information:
+Tax type
+Property/transaction
+Taxpayer
+Tax authority/category
+Tax amount
+Due date
+Paid date
+Payment status
+Payment reference
+Attachment
+Dashboard:
+Total Tax
+Tax Paid
+Tax Outstanding
+Tax Due Soon
+
+17. Zakat Reporting
+Zakat should be separately tracked from normal expenses.
+Information:
+Zakat calculation period
+Eligible assets
+Zakatable amount
+Zakat rate
+Calculated Zakat
+Amount paid
+Payment date
+Remaining amount
+Payment reference
+Dashboard:
+Zakat
+Calculated: PKR 1.2M
+Paid: PKR 1M
+Remaining: PKR 200K
+The system should keep Zakat accounting separate from normal operating expenses while allowing it to appear in the CEO's overall financial summary.
+
+18. Cash Flow Dashboard
+The CEO should be able to understand where money is coming from and where it is going.
+Cash Inflows
+Property sales
+Customer payments
+Other income
+Investments
+Other receipts
+Cash Outflows
+Property purchases
+Agent commissions
+Employee salaries
+Office expenses
+Bills
+Taxes
+Zakat
+Marketing
+Property expenses
+Other expenses
+Dashboard:
+Total Cash In: PKR 300M
+Total Cash Out: PKR 250M
+Net Cash Flow: PKR 50M
+
+19. Accounts Receivable
+The CEO should see money expected from customers/buyers.
+Show:
+Customer
+Property
+Sale amount
+Amount received
+Outstanding amount
+Due date
+Days overdue
+Payment status
+Example:
+Customer A
+Sale: PKR 20M
+Received: PKR 15M
+Outstanding: PKR 5M
+
+20. Accounts Payable
+The system should show money that the company needs to pay.
+Examples:
+Property seller
+Agent
+Employee
+Vendor
+Tax authority
+Utility company
+Contractor
+Dashboard:
+Total Payable: PKR 15M
+Breakdown:
+Agent Commission: 2M
+Property Sellers: 8M
+Salaries: 2M
+Bills: 1M
+Other Vendors: 2M
+
+21. Financial Profit & Loss Report
+The system should generate a complete Profit & Loss report.
+Revenue
+Property Sales
+Other Revenue
+Cost of Sales
+Property Purchase Cost
+Property Acquisition Costs
+Gross Profit
+Revenue − Cost of Sales
+Operating Expenses
+Agent Commission
+Salaries
+Office Expenses
+Marketing
+Bills
+Maintenance
+Transportation
+Other Expenses
+Other Financial Obligations
+Taxes
+Zakat
+Net Profit
+Gross Profit − All Applicable Expenses
+The report should support:
+Weekly
+Monthly
+Quarterly
+Yearly
+Custom date range
+
+22. Dashboard Charts
+The CEO dashboard should include visual charts.
+Sales vs Purchase Chart
+A line/bar chart comparing:
+Purchase cost
+Sales revenue
+Gross profit
+
+Monthly Profit Chart
+Display:
+January → December
+With:
+Revenue
+Expenses
+Net profit
+
+Expense Breakdown
+Pie/donut chart:
+Salaries
+Office expenses
+Agent commissions
+Marketing
+Bills
+Tax
+Zakat
+Other
+
+Property Portfolio Chart
+Show:
+Total properties
+Sold properties
+Available properties
+Reserved properties
+Under process
+
+23. CEO Dashboard Suggested Layout
+Top Row
+Total Property Value | Total Purchase Cost | Total Sales | Gross Profit | Net Profit
+Second Row
+Agent Commission | Salaries | Office Expenses | Tax | Zakat
+Third Row
+Cash In | Cash Out | Receivable | Payable
+Fourth Row
+Sales vs Purchase Chart
+Fifth Row
+Monthly Profit Chart | Expense Breakdown
+Sixth Row
+Property Inventory | Top Agents | Recent Transactions
+Seventh Row
+Upcoming Payments | Overdue Bills | Outstanding Commissions | Customer Receivables
+
+24. Top Performing Agents
+CEO should be able to see which agents are generating the most business.
+Report:
+Rank
+Agent
+Transactions
+Sales Value
+Profit Generated
+Commission
+1
+Agent A
+25
+150M
+30M
+4M
+2
+Agent B
+20
+120M
+25M
+3M
+Filters:
+Weekly
+Monthly
+Yearly
+Custom range
+
+25. Property Performance Report
+Each property should have its own profitability report.
+Example:
+Property A
+Purchase Price: PKR 10M
+Additional Cost: PKR 500K
+Total Cost: PKR 10.5M
+Selling Price: PKR 14M
+Agent Commission: PKR 500K
+Other Expenses: PKR 100K
+Gross Profit:
+PKR 3.5M
+Net Profit:
+PKR 2.9M
+This allows management to identify the most profitable and least profitable properties.
+
+26. Transaction-Level Reporting
+Every financial transaction should have a unique transaction record.
+Required fields:
+Transaction ID
+Date
+Transaction type
+Property
+Customer/vendor
+Agent
+Amount
+Payment method
+Account/cash source
+Reference number
+Description
+Attachment
+Created by
+Approved by
+Created date
+Updated date
+
+27. Payment Methods
+Reports should support:
+Cash
+Bank transfer
+Cheque
+Online payment
+Other
+The system should allow multiple bank/cash accounts.
+
+28. Date Filters
+Every major CEO report should support:
+Today
+Yesterday
+This week
+Last week
+This month
+Last month
+This quarter
+This year
+Last year
+Custom date range
+The selected date filter should update all dashboard KPIs and charts.
+
+29. Exporting Reports
+CEO/Admin should be able to export reports.
+Supported formats:
+PDF
+Excel
+CSV
+Print
+Reports should include:
+Company name
+Report name
+Date range
+Generated date
+Financial totals
+Detailed records
+
+30. Report Permissions
+Different users should have different access levels.
+CEO
+Full access.
+Can see:
+All properties
+All purchases
+All sales
+All profits
+All expenses
+All salaries
+All commissions
+Taxes
+Zakat
+Cash flow
+Financial reports
+Accountant
+Access to:
+Purchases
+Sales
+Expenses
+Payments
+Taxes
+Zakat
+Financial reports
+Salary information can be restricted according to company policy.
+Manager
+Access to:
+Properties
+Sales
+Purchases
+Agents
+Commissions
+Operational reports
+Agent
+Access only to:
+Assigned properties
+Own customers
+Own transactions
+Own commission
+Own commission payment status
+
+31. Audit Trail
+Because this is a financial system, every important action should be logged.
+The system should record:
+Who created the transaction
+Who edited it
+Who approved it
+Previous amount
+New amount
+Date/time
+User
+Financial records should not simply be deleted.
+Instead, use:
+Void
+Cancel
+Reverse
+Adjustment
+This maintains financial history.
+
+32. Important Financial Rules
+The system should keep the following values separate:
+Purchase Cost
+Actual cost of acquiring the property.
+Selling Revenue
+Revenue generated from selling the property.
+Gross Property Profit
+Selling price minus property cost.
+Operating Expenses
+Business expenses such as salaries, rent, marketing and utilities.
+Agent Commission
+Commission paid/payable to agents.
+Tax
+Government/business tax obligations.
+Zakat
+Zakat should be separately recorded and reported.
+Net Profit
+The final profit after applicable costs and expenses.
+
+33. Recommended CEO Dashboard KPIs
+The final CEO dashboard should contain at least these KPIs:
+Total Properties
+Available Properties
+Reserved Properties
+Sold Properties
+Property Portfolio Cost
+Current Property Market Value
+Potential Portfolio Profit
+Total Purchase Cost
+Total Sales
+Gross Profit
+Net Profit
+Weekly Profit
+Monthly Profit
+Yearly Profit
+Agent Commission Paid
+Agent Commission Outstanding
+Employee Salaries
+Office Expenses
+Bills Paid
+Bills Outstanding
+Tax Paid
+Tax Outstanding
+Zakat Paid
+Zakat Outstanding
+Total Other Expenses
+Total Cash In
+Total Cash Out
+Customer Receivables
+Company Payables
+
+34. Example CEO Summary
+For example, when the CEO opens the dashboard:
+Financial Overview — September 2026
+KPI
+Amount
+Property Portfolio Cost
+PKR 200M
+Current Property Value
+PKR 250M
+Total Purchases
+PKR 50M
+Total Sales
+PKR 80M
+Gross Profit
+PKR 30M
+Agent Commission
+PKR 3M
+Salaries
+PKR 2M
+Office Expenses
+PKR 1M
+Bills
+PKR 500K
+Tax Paid
+PKR 2M
+Zakat Paid
+PKR 500K
+Other Expenses
+PKR 500K
+Net Profit
+PKR 20.5M
+The CEO should be able to click any number and open the detailed transactions behind that number.
+For example:
+Click "Agent Commission PKR 3M" → Agent Commission Detail → Agent-wise transactions → Property → Sale → Commission payment.
+
+35. Drill-Down Reporting
+This is an important requirement.
+Every dashboard figure should be clickable.
+Example:
+Total Sales: PKR 80M
+CEO clicks it.
+System opens:
+Sales Report
+Then CEO can see:
+Property
+Buyer
+Agent
+Sale date
+Sale amount
+Received amount
+Outstanding amount
+Commission
+Net revenue
+Similarly:
+Total Expenses → Expense Detail → Expense Category → Individual Transactions
+Net Profit → Profit Detail → Revenue − Costs − Expenses
+Total Purchase → Purchase Detail → Individual Properties
+
+36. Alerts & Notifications
+CEO dashboard should show important alerts.
+Examples:
+Financial Alerts
+Large unpaid customer balance
+Large payable amount
+Overdue agent commission
+Overdue tax
+Overdue bills
+Salary payment due
+Property payment due
+Property Alerts
+Properties held for too long
+Properties with declining estimated value
+Properties with high potential profit
+Properties with low/no profit
+Upcoming property payment
+
+37. Final Objective
+The objective of this module is to give the CEO a complete real-time picture of the company's financial health.
+The CEO should not need to manually calculate:
+Purchase totals
+Sales totals
+Property value
+Profit
+Agent commissions
+Salaries
+Office expenses
+Bills
+Taxes
+Zakat
+Other expenses
+Cash flow
+The system should calculate these automatically from the underlying transactions.
+Core Formula
+Total Sales
+minus
+Total Property Purchase Costs
+equals
+Gross Profit
+Then subtract:
+Agent Commission
+Salaries
+Office Expenses
+Bills
+Marketing
+Property Expenses
+Taxes
+Zakat
+Other Expenses
+equals
+NET PROFIT
+The CEO dashboard should provide both summary information and complete drill-down details, so every figure can be traced back to the original transaction.
+If you want, I can also turn this into a complete software SRS document with database tables, fields, formulas, user roles/permissions, API requirements, and the exact CEO dashboard screen structure for your development team.
